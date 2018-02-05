@@ -1,7 +1,6 @@
-# jupyterlab_provenance
+# JupyterLab Notebook Provenance
 
-JupyterLab Notebook Provenance
-
+Tracking changes in Jupyter notebooks in an interactive provenance graph.
 
 ## Prerequisites
 
