@@ -5,7 +5,7 @@ JupyterLab Notebook Provenance
 
 ## Prerequisites
 
-* JupyterLab
+* [JupyterLab](http://jupyterlab.readthedocs.io/en/latest/getting_started/installation.html)
 
 ## Installation
 
