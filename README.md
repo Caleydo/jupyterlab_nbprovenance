@@ -6,11 +6,6 @@ Tracking user interactions in Jupyter notebooks in an interaction provenance gra
 
 * [JupyterLab](http://jupyterlab.readthedocs.io/en/latest/getting_started/installation.html)
 
-
-## Prerequisites
-
-* JupyterLab
-
 ## Installation
 
 ```bash
