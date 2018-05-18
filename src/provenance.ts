@@ -5,12 +5,23 @@ import { IChangedArgs } from "@jupyterlab/coreutils";
 import { Cell, ICellModel } from "@jupyterlab/cells";
 import { each } from "@phosphor/algorithm";
 import { IObservableList } from "@jupyterlab/observables";
+import {
+  ActionFunctionRegistry,
+  ProvenanceGraph,
+  ProvenanceGraphTraverser,
+  ProvenanceTracker,
+  ReversibleAction,
+  StateNode
+} from '@visualstorytelling/provenance-core';
+import { JupyterLab } from "@jupyterlab/application";
+import { JSONValue } from "@phosphor/coreutils";
 
 /**
  * A notebook widget extension that adds a button to the toolbar.
  */
 export class ProvenanceExtension
   implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
+
   /**
    * Create a new extension object.
    */
@@ -18,6 +29,28 @@ export class ProvenanceExtension
     panel: NotebookPanel,
     context: DocumentRegistry.IContext<INotebookModel>
   ): IDisposable {
+
+    const registry = new ActionFunctionRegistry();
+    registry.register('stateChanged', async (name, value) => {
+      switch (name) {
+        case 'activeCellIndex':
+          panel.notebook.activeCellIndex = value;
+          break;
+
+        case 'mode':
+          panel.notebook.mode = value;
+          break;
+
+        default:
+          Promise.reject('Unknown name for stateChanged signal');
+          break;
+      }
+    });
+
+    const graph = new ProvenanceGraph({ name: JupyterLab.defaultInfo.name, version: JupyterLab.defaultInfo.version });
+    const tracker = new ProvenanceTracker(registry, graph);
+    const traverser = new ProvenanceGraphTraverser(registry, graph);
+
     console.log(panel, context);
 
     const modelChangedListener = (notebook: Notebook) => {
@@ -33,7 +66,23 @@ export class ProvenanceExtension
       args: IChangedArgs<any>
     ) => {
       console.log("stateChanged", notebook, args);
+
+      const action = {
+        do: 'stateChanged',
+        doArguments: [args.name, args.newValue],
+        undo: 'stateChanged',
+        undoArguments: [args.name, args.oldValue]
+      } as ReversibleAction;
+
+      tracker.applyAction(action, true)
+        .then((node: StateNode) => {
+          node.label = `stateChanged for ${args.name}`;
+          node.artifacts.notebook = notebook.model.toJSON();
+          return node;
+        });
+      console.log('graph', graph);
     };
+    panel.notebook.stateChanged.connect(stateChangedListener);
 
     const activeCellChangedListener = (notebook: Notebook, args: Cell) => {
       console.log("activeCellChanged", notebook, args);
