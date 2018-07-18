@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "JupyterLab Notebook Provenance",
   "keywords": [
-    "extension",
     "jupyter",
-    "jupyterlab"
+    "jupyterlab",
+    "jupyterlab extension"
   ],
   "homepage": "https://github.com/Caleydo/jupyterlab_nbprovenance",
   "bugs": {
@@ -25,19 +25,29 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "prepublishOnly": "npm run build",
+    "extension:install": "jupyter labextension install jupyterlab_nbprovenance",
+    "extension:uninstall": "jupyter labextension uninstall  jupyterlab_nbprovenance",
+    "extension:enable": "jupyter labextension enable jupyterlab_nbprovenance",
+    "extension:disable": "jupyter labextension disable jupyterlab_nbprovenance"
   },
   "dependencies": {
-    "@jupyterlab/application": "^0.15.2",
-    "@jupyterlab/apputils": "^0.15.2",
-    "@jupyterlab/docregistry": "^0.15.2",
-    "@jupyterlab/notebook": "^0.15.2",
-    "@phosphor/disposable": "^1.1.2"
+    "@jupyterlab/application": "~0.16.3",
+    "@jupyterlab/apputils": "~0.16.4",
+    "@jupyterlab/console": "~0.16.3",
+    "@jupyterlab/filebrowser": "~0.16.3",
+    "@jupyterlab/mainmenu": "~0.5.3",
+    "@jupyterlab/notebook": "~0.16.3",
+    "@jupyterlab/rendermime-interfaces": "~1.0.10",
+    "@phosphor/widgets": "~1.6.0",
+    "node-sass": "~4.9.0",
+    "@visualstorytelling/provenance-core": "~1.1.1"
   },
   "devDependencies": {
-    "rimraf": "^2.6.1",
+    "tslint": "~5.10.0",
     "typescript": "~2.9.2"
+    "watch": "~1.0.2"
   },
   "jupyterlab": {
     "extension": true

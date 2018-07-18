@@ -1,0 +1,29 @@
+version: '2.2'
+services:
+  lab:
+    build: .
+    command: jupyter lab --port=8889 --watch --ip='*' --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
+    init: true
+    ports:
+     - "8889:8889"
+    volumes:
+      - ".:/jupyterlab_nbprovenance"
+    depends_on:
+      - build
+  build:
+    build: .
+    command: yarn watch
+    init: true
+    volumes:
+       - ".:/jupyterlab_nbprovenance"
+  test:
+    build:
+      context: .
+      dockerfile: test.Dockerfile
+    command: cypress run
+    init: true
+    working_dir: /jupyterlab_nbprovenance
+    volumes:
+      - ".:/jupyterlab_nbprovenance"
+    environment:
+      CYPRESS_BASE_URL: "http://lab:8889"
