@@ -2,7 +2,11 @@
   "name": "jupyterlab_nbprovenance",
   "version": "0.1.0",
   "description": "JupyterLab Notebook Provenance",
-  "keywords": ["extension", "jupyter", "jupyterlab"],
+  "keywords": [
+    "extension",
+    "jupyter",
+    "jupyterlab"
+  ],
   "homepage": "https://github.com/Caleydo/jupyterlab_nbprovenance",
   "bugs": {
     "url": "https://github.com/Caleydo/jupyterlab_nbprovenance/issues"
@@ -33,7 +37,7 @@
   },
   "devDependencies": {
     "rimraf": "^2.6.1",
-    "typescript": "~2.6.0"
+    "typescript": "~2.9.2"
   },
   "jupyterlab": {
     "extension": true
