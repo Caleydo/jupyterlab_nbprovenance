@@ -5,9 +5,8 @@ import * as React from 'react';
 import { Widget, BoxLayout } from "@phosphor/widgets";
 import { Kernel } from "@jupyterlab/services";
 import { Toolbar, ToolbarButton, VDomRenderer } from "@jupyterlab/apputils";
-import { ProvenanceGraph } from '@visualstorytelling/provenance-core';
 import { NbProvenanceModel } from "./model";
-
+import { ProvenanceGraphTree } from '@visualstorytelling/provenance-react';
 
 /**
  * The main view for the notebook provenance.
@@ -65,11 +64,6 @@ export class ProvenanceGraphView extends VDomRenderer<NbProvenanceModel> {
      */
     protected render(): React.ReactElement<any>[] {
         const model = this.model!;
-        const nodes = Object.values(model.graph.nodes);
-        let elements: React.ReactElement<any>[] = [];
-
-        elements = [...elements, ...nodes.map((node) => <p>{node.label} ({node.id})</p>)];
-
-        return elements;
+        return [<ProvenanceGraphTree traverser={model.traverser} />];
     }
 }

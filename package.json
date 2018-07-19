@@ -42,7 +42,8 @@
     "@jupyterlab/rendermime-interfaces": "~1.0.10",
     "@phosphor/widgets": "~1.6.0",
     "node-sass": "~4.9.0",
-    "@visualstorytelling/provenance-core": "~1.1.1"
+    "@visualstorytelling/provenance-core": "~1.1.1",
+    "@visualstorytelling/provenance-react": "^1.0.0"
   },
   "devDependencies": {
     "tslint": "~5.10.0",
