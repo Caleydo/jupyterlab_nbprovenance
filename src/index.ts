@@ -10,7 +10,12 @@ const extension: JupyterLabPlugin<void> = {
   autoStart: true,
   activate: (app: JupyterLab) => {
     console.log("JupyterLab extension jupyterlab_nbprovenance is activated!");
-    app.docRegistry.addWidgetExtension("Notebook", new ProvenanceExtension());
+
+    const graph = new ProvenanceGraph({ name: 'nbprovenance.default.graph', version: app.info.version });
+
+    let { commands, docRegistry } = app;
+    let extension = new ProvenanceExtension(commands, graph);
+    docRegistry.addWidgetExtension('Notebook', extension);
   }
 };
 

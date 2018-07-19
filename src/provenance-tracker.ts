@@ -1,15 +1,15 @@
 import { IDisposable, DisposableDelegate } from "@phosphor/disposable";
 import { DocumentRegistry } from "@jupyterlab/docregistry";
 import { NotebookPanel, INotebookModel } from "@jupyterlab/notebook";
-import { ICellModel } from "@jupyterlab/cells";
-import { each } from "@phosphor/algorithm";
+import { find, each } from "@phosphor/algorithm";
+import { CommandRegistry } from "@phosphor/commands";
+import { ToolbarButton, Toolbar } from "@jupyterlab/apputils";
+import { CommandIDs } from ".";
+import { ProvenanceGraph, ProvenanceTracker, ActionFunctionRegistry } from "@visualstorytelling/provenance-core";
 import { IObservableList } from "@jupyterlab/observables";
-import {
-  ActionFunctionRegistry,
-  ProvenanceGraph,
-  ProvenanceTracker
-} from '@visualstorytelling/provenance-core';
+import { ICellModel } from "@jupyterlab/cells";
 import { nbformat } from "@jupyterlab/coreutils";
+
 
 /**
  * A notebook widget extension that adds a button to the toolbar.
@@ -18,8 +18,18 @@ export class ProvenanceExtension
   implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
 
   private context: DocumentRegistry.IContext<INotebookModel>;
+  private commands: CommandRegistry;
+
   private tracker: ProvenanceTracker;
   private graph: ProvenanceGraph;
+
+  /**
+   *
+   */
+  constructor(commands: CommandRegistry, graph: ProvenanceGraph) {
+    this.commands = commands;
+    this.graph = graph;
+  }
 
   /**
    * Create a new extension object
@@ -28,17 +38,52 @@ export class ProvenanceExtension
     panel: NotebookPanel,
     context: DocumentRegistry.IContext<INotebookModel>
   ): IDisposable {
-    console.log(panel, context);
+    // Add buttons to toolbar
+    let buttons: ToolbarButton[] = [];
+    let insertionPoint = -1;
+    find(panel.toolbar.children(), (tbb: ToolbarButton, index) => {
+      if (tbb.hasClass('jp-Notebook-toolbarCellType')) {
+        insertionPoint = index;
+        return true;
+      }
+      return false;
+    });
+    let i = 1;
+    for (let id of [CommandIDs.newProvenance]) {
+      let button = Toolbar.createFromCommand(this.commands, id);
+      if (button === null) {
+        throw new Error('Cannot create button, command not registered!');
+      }
+      if (insertionPoint >= 0) {
+        panel.toolbar.insertItem(insertionPoint + i++, this.commands.label(id), button);
+      } else {
+        panel.toolbar.addItem(this.commands.label(id), button);
+      }
+      buttons.push(button);
+    }
 
+    this.initTracking(panel, context);
+
+    return new DisposableDelegate(() => {
+      // Cleanup extension here
+      for (let btn of buttons) {
+        btn.dispose();
+      }
+    });
+  }
+
+  private initTracking(
+    panel: NotebookPanel,
+    context: DocumentRegistry.IContext<INotebookModel>
+  ) {
+    console.log(panel, context);
     this.context = context;
 
     const registry = new ActionFunctionRegistry();
     registry.register('addCell', this.addCell, this);
     registry.register('removeCell', this.removeCell, this);
 
-    this.graph = new ProvenanceGraph({ name: context.path, version: '0.0.1' });
     this.tracker = new ProvenanceTracker(registry, this.graph);
-
 
     panel.notebook.model.cells.changed.connect(this._onCellsChanged, this);
 
