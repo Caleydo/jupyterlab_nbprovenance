@@ -15,7 +15,11 @@
       "es2015",
       "es2017"
     ],
-    "types": []
+    "types": [],
+    "strictNullChecks": true,
+    "jsx": "react",
+    "skipLibCheck": true,
+    "sourceMap": true
   },
   "include": [
     "src/*"
