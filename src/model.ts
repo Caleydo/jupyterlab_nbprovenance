@@ -2,7 +2,9 @@ import { VDomModel } from '@jupyterlab/apputils';
 import { ProvenanceGraph, ProvenanceNode, ProvenanceGraphTraverser, IProvenanceGraphTraverser, IProvenanceGraph, ActionFunctionRegistry, IActionFunctionRegistry } from '@visualstorytelling/provenance-core';
 import { JupyterLab } from '@jupyterlab/application';
 import { nbformat } from '@jupyterlab/coreutils';
-import { JSONValue } from '@phosphor/coreutils';
+import { INotebookModel } from '@jupyterlab/notebook';
+import { DocumentRegistry } from '@jupyterlab/docregistry';
+import { ICellModel } from '@jupyterlab/cells';
 
 /**
  * Model for a provenance graph.
@@ -12,6 +14,10 @@ export class NbProvenanceModel extends VDomModel {
     private _travserer: IProvenanceGraphTraverser;
     private _registry: IActionFunctionRegistry;
     private _graph: IProvenanceGraph;
+
+    public context: DocumentRegistry.IContext<INotebookModel>;
+
+    public pauseTracking: boolean = false;
 
     constructor(private app: JupyterLab) {
         super();
@@ -48,14 +54,41 @@ export class NbProvenanceModel extends VDomModel {
     }
 
 
-    private async addCell(newCell: nbformat.ICell, notebookJSON: JSONValue) {
-        console.log('add this cell', newCell);
-        return notebookJSON;
+    private async addCell(index: number, cell: nbformat.ICell) {
+        console.log('added cell at index', index, cell);
+
+        // code from NotebookModel.fromJSON() --> @jupyterlab/notebook/src/model.ts
+        const factory = this.context.model.contentFactory;
+        let cellModel: ICellModel;
+
+        switch (cell.cell_type) {
+            case 'code':
+                cellModel = factory.createCodeCell({ cell });
+                break;
+            case 'markdown':
+                cellModel = factory.createMarkdownCell({ cell });
+                break;
+            case 'raw':
+                cellModel = factory.createRawCell({ cell });
+                break;
+            default:
+                console.error('Unknown cell type', cell.cell_type);
+                return null;
+        }
+
+        this.pauseTracking = true;
+        this.context.model.cells.insert(index, cellModel);
+        this.pauseTracking = false;
+
+        return null;
     }
 
-    private async removeCell(oldCell: nbformat.ICell, notebookJSON: JSONValue) {
-        console.log('remove this cell', oldCell);
-        return notebookJSON;
+    private async removeCell(index: number) {
+        console.log('removed cell at index', index);
+        this.pauseTracking = true;
+        this.context.model.cells.remove(index);
+        this.pauseTracking = false;
+        return null;
     }
 
 }

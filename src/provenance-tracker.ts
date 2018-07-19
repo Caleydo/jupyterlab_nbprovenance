@@ -17,7 +17,6 @@ import { NbProvenanceModel } from './model';
 export class ProvenanceExtension
   implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
 
-  private context: DocumentRegistry.IContext<INotebookModel>;
   private commands: CommandRegistry;
 
   private tracker: IProvenanceTracker;
@@ -25,7 +24,7 @@ export class ProvenanceExtension
   /**
    *
    */
-  constructor(commands: CommandRegistry, private model: NbProvenanceModel) {
+  constructor(commands: CommandRegistry, private nbProvenanceModel: NbProvenanceModel) {
     this.commands = commands;
   }
 
@@ -75,10 +74,9 @@ export class ProvenanceExtension
     context: DocumentRegistry.IContext<INotebookModel>
   ) {
     console.log(panel, context);
-    this.context = context;
+    this.nbProvenanceModel.context = context;
 
-
-    this.tracker = new ProvenanceTracker(this.model.registry, this.model.graph);
+    this.tracker = new ProvenanceTracker(this.nbProvenanceModel.registry, this.nbProvenanceModel.graph);
 
     panel.notebook.model.cells.changed.connect(this._onCellsChanged, this);
 
@@ -94,34 +92,40 @@ export class ProvenanceExtension
     list: IObservableList<ICellModel>,
     change: IObservableList.IChangedArgs<ICellModel>
   ): void {
+    if (this.nbProvenanceModel.pauseTracking) {
+      console.log('tracking paused');
+      return;
+    }
+
     console.groupCollapsed('cells changed ->', change.type);
+    console.log(change);
 
     switch (change.type) {
       case 'add':
-        each(change.newValues, cell => {
-          console.log('newValues', cell);
-        });
+        // each(change.newValues, cell => {
+        //   console.log('newValues', cell);
+        // });
         Promise.resolve(
           this.tracker.applyAction({
             do: 'addCell',
-            doArguments: [change.newValues[0].toJSON(), this.context.model.toJSON()],
+            doArguments: [change.newIndex, change.newValues[0].toJSON()],
             undo: 'removeCell',
-            undoArguments: [change.newValues[0].toJSON(), this.context.model.toJSON()]
-          }, false)
+            undoArguments: [change.newIndex]
+          }, true)
         );
         break;
       case 'remove':
-        each(change.oldValues, cell => {
-          console.log('oldValues', cell);
-          /* no op */
-        });
+        // each(change.oldValues, cell => {
+        //   console.log('oldValues', cell);
+        //   /* no op */
+        // });
         Promise.resolve(
           this.tracker.applyAction({
             do: 'removeCell',
-            doArguments: [change.oldValues[0].toJSON()],
+            doArguments: [change.oldIndex],
             undo: 'addCell',
-            undoArguments: [change.oldValues[0].toJSON()]
-          }, false)
+            undoArguments: [change.oldIndex, change.oldValues[0].toJSON()]
+          }, true)
         );
         break;
       case 'move':

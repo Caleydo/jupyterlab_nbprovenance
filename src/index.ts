@@ -34,7 +34,7 @@ function addCommands(
   tracker: INotebookTracker,
   palette: ICommandPalette,
   menu: IMainMenu,
-  model: NbProvenanceModel
+  nbProvenanceModel: NbProvenanceModel
 ): void {
   const { commands, shell } = app;
 
@@ -49,7 +49,7 @@ function addCommands(
   }
 
   commands.addCommand(CommandIDs.newProvenance, {
-    label: 'Notebook provenance',
+    label: 'Notebook Provenance',
     caption: 'Open a window to explore the interaction history with the notebook',
     iconClass: 'jp-nbprovenanceIcon',
     isEnabled: hasKernel,
@@ -58,7 +58,7 @@ function addCommands(
       if (!current) {
         return;
       }
-      const widget = new NbProvenanceView(current.context.session.kernel!, model);
+      const widget = new NbProvenanceView(current.context.session.kernel!, nbProvenanceModel);
       shell.addToMainArea(widget);
       if (args['activate'] !== false) {
         shell.activateById(widget.id);
@@ -94,15 +94,15 @@ const extension: JupyterLabPlugin<void> = {
 
     console.log('JupyterLab extension jupyterlab_nbprovenance is activated!');
 
-    const model = new NbProvenanceModel(app);
+    const nbProvenanceModel = new NbProvenanceModel(app);
 
     let { commands, docRegistry } = app;
-    let extension = new ProvenanceExtension(commands, model);
+    let extension = new ProvenanceExtension(commands, nbProvenanceModel);
     docRegistry.addWidgetExtension('Notebook', extension);
 
     // TODO: Recreate views from layout restorer
 
-    addCommands(app, tracker, palette, mainMenu, model);
+    addCommands(app, tracker, palette, mainMenu, nbProvenanceModel);
 
     function refreshNewCommand() {
       commands.notifyCommandChanged(CommandIDs.newProvenance);
