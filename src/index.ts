@@ -111,6 +111,7 @@ const extension: JupyterLabPlugin<void> = {
     // Update the command registry when the notebook state changes.
     tracker.currentChanged.connect(refreshNewCommand);
 
+    // TODO the command should not be bind to the `kernelChanged` signal
     let prevWidget: NotebookPanel | null = tracker.currentWidget;
     if (prevWidget) {
       prevWidget.context.session.kernelChanged.connect(refreshNewCommand);
