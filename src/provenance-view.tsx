@@ -22,9 +22,9 @@ export class NbProvenanceView extends Widget {
     protected expandAllButton: ToolbarButton;
     protected collapseAllButton: ToolbarButton;
 
-    constructor(kernel: Kernel.IKernelConnection, graph: ProvenanceGraph) {
+    constructor(kernel: Kernel.IKernelConnection, model: NbProvenanceModel) {
         super();
-        this._model = new NbProvenanceModel(graph);
+        this._model = model;
 
         this.addClass('jp-nbprovenance-view');
         this.id = `nbprovenance-${kernel.id}`;

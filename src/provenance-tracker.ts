@@ -5,10 +5,10 @@ import { find, each } from "@phosphor/algorithm";
 import { CommandRegistry } from "@phosphor/commands";
 import { ToolbarButton, Toolbar } from "@jupyterlab/apputils";
 import { CommandIDs } from ".";
-import { ProvenanceGraph, ProvenanceTracker, ActionFunctionRegistry } from "@visualstorytelling/provenance-core";
+import { ProvenanceTracker, IProvenanceTracker } from "@visualstorytelling/provenance-core";
 import { IObservableList } from "@jupyterlab/observables";
 import { ICellModel } from "@jupyterlab/cells";
-import { nbformat } from "@jupyterlab/coreutils";
+import { NbProvenanceModel } from "./model";
 
 
 /**
@@ -20,15 +20,13 @@ export class ProvenanceExtension
   private context: DocumentRegistry.IContext<INotebookModel>;
   private commands: CommandRegistry;
 
-  private tracker: ProvenanceTracker;
-  private graph: ProvenanceGraph;
+  private tracker: IProvenanceTracker;
 
   /**
    *
    */
-  constructor(commands: CommandRegistry, graph: ProvenanceGraph) {
+  constructor(commands: CommandRegistry, private model: NbProvenanceModel) {
     this.commands = commands;
-    this.graph = graph;
   }
 
   /**
@@ -79,11 +77,8 @@ export class ProvenanceExtension
     console.log(panel, context);
     this.context = context;
 
-    const registry = new ActionFunctionRegistry();
-    registry.register('addCell', this.addCell, this);
-    registry.register('removeCell', this.removeCell, this);
 
-    this.tracker = new ProvenanceTracker(registry, this.graph);
+    this.tracker = new ProvenanceTracker(this.model.registry, this.model.graph);
 
     panel.notebook.model.cells.changed.connect(this._onCellsChanged, this);
 
@@ -109,10 +104,10 @@ export class ProvenanceExtension
         Promise.resolve(
           this.tracker.applyAction({
             do: 'addCell',
-            doArguments: [change.newValues[0].toJSON()],
+            doArguments: [change.newValues[0].toJSON(), this.context.model.toJSON()],
             undo: 'removeCell',
-            undoArguments: [change.newValues[0].toJSON()]
-          })
+            undoArguments: [change.newValues[0].toJSON(), this.context.model.toJSON()]
+          }, false)
         );
         break;
       case "remove":
@@ -126,7 +121,7 @@ export class ProvenanceExtension
             doArguments: [change.oldValues[0].toJSON()],
             undo: 'addCell',
             undoArguments: [change.oldValues[0].toJSON()]
-          })
+          }, false)
         );
         break;
       case "move":
@@ -148,17 +143,6 @@ export class ProvenanceExtension
     }
 
     console.groupEnd();
-
-    console.log(`graph.nodes`, this.graph.nodes);
   }
 
-  private async addCell(newCell: nbformat.ICell) {
-    console.log('add this cell', newCell)
-    return this.context.model.toJSON();
-  }
-
-  private async removeCell(oldCell: nbformat.ICell) {
-    console.log('remove this cell', oldCell)
-    return this.context.model.toJSON();
-  }
 }

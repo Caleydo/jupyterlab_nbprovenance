@@ -7,7 +7,7 @@ import { IMainMenu } from '@jupyterlab/mainmenu';
 import { Token } from "@phosphor/coreutils";
 import { DocumentRegistry } from "@jupyterlab/docregistry";
 import { NbProvenanceView } from "./provenance-view";
-import { ProvenanceGraph } from "@visualstorytelling/provenance-core";
+import { NbProvenanceModel } from "./model";
 
 
 /**
@@ -34,7 +34,7 @@ function addCommands(
   tracker: INotebookTracker,
   palette: ICommandPalette,
   menu: IMainMenu,
-  graph: ProvenanceGraph
+  model: NbProvenanceModel
 ): void {
   const { commands, shell } = app;
 
@@ -58,7 +58,7 @@ function addCommands(
       if (!current) {
         return;
       }
-      const widget = new NbProvenanceView(current.context.session.kernel!, graph);
+      const widget = new NbProvenanceView(current.context.session.kernel!, model);
       shell.addToMainArea(widget);
       if (args['activate'] !== false) {
         shell.activateById(widget.id);
@@ -94,15 +94,15 @@ const extension: JupyterLabPlugin<void> = {
 
     console.log("JupyterLab extension jupyterlab_nbprovenance is activated!");
 
-    const graph = new ProvenanceGraph({ name: 'nbprovenance.default.graph', version: app.info.version });
+    const model = new NbProvenanceModel(app);
 
     let { commands, docRegistry } = app;
-    let extension = new ProvenanceExtension(commands, graph);
+    let extension = new ProvenanceExtension(commands, model);
     docRegistry.addWidgetExtension('Notebook', extension);
 
     // TODO: Recreate views from layout restorer
 
-    addCommands(app, tracker, palette, mainMenu, graph);
+    addCommands(app, tracker, palette, mainMenu, model);
 
     function refreshNewCommand() {
       commands.notifyCommandChanged(CommandIDs.newProvenance);
