@@ -1,11 +1,11 @@
 import { IDisposable, DisposableDelegate } from '@phosphor/disposable';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
-import { find, each } from '@phosphor/algorithm';
+import { find } from '@phosphor/algorithm';
 import { CommandRegistry } from '@phosphor/commands';
 import { ToolbarButton, Toolbar } from '@jupyterlab/apputils';
 import { CommandIDs } from '.';
-import { ProvenanceTracker, IProvenanceTracker } from '@visualstorytelling/provenance-core';
+import { ProvenanceTracker, IProvenanceTracker, Action } from '@visualstorytelling/provenance-core';
 import { IObservableList } from '@jupyterlab/observables';
 import { ICellModel } from '@jupyterlab/cells';
 import { NbProvenanceModel } from './model';
@@ -75,6 +75,7 @@ export class ProvenanceExtension
   ) {
     console.log(panel, context);
     this.nbProvenanceModel.context = context;
+    this.nbProvenanceModel.notebook = panel.notebook;
 
     this.tracker = new ProvenanceTracker(this.nbProvenanceModel.registry, this.nbProvenanceModel.graph);
 
@@ -100,52 +101,46 @@ export class ProvenanceExtension
     console.groupCollapsed('cells changed ->', change.type);
     console.log(change);
 
+    let action: Action;
+
     switch (change.type) {
       case 'add':
-        // each(change.newValues, cell => {
-        //   console.log('newValues', cell);
-        // });
-        Promise.resolve(
-          this.tracker.applyAction({
-            do: 'addCell',
-            doArguments: [change.newIndex, change.newValues[0].toJSON()],
-            undo: 'removeCell',
-            undoArguments: [change.newIndex]
-          }, true)
-        );
+        action = {
+          do: 'addCell',
+          doArguments: [change.newIndex, change.newValues[0].toJSON()],
+          undo: 'removeCell',
+          undoArguments: [change.newIndex]
+        };
         break;
       case 'remove':
-        // each(change.oldValues, cell => {
-        //   console.log('oldValues', cell);
-        //   /* no op */
-        // });
-        Promise.resolve(
-          this.tracker.applyAction({
-            do: 'removeCell',
-            doArguments: [change.oldIndex],
-            undo: 'addCell',
-            undoArguments: [change.oldIndex, change.oldValues[0].toJSON()]
-          }, true)
-        );
+        action = {
+          do: 'removeCell',
+          doArguments: [change.oldIndex],
+          undo: 'addCell',
+          undoArguments: [change.oldIndex, change.oldValues[0].toJSON()]
+        };
         break;
       case 'move':
-        each(change.newValues, cell => {
-          console.log('newValues', cell);
-        });
+        action = {
+          do: 'moveCell',
+          doArguments: [change.oldIndex, change.newIndex],
+          undo: 'moveCell',
+          undoArguments: [change.newIndex, change.oldIndex]
+        };
         break;
-      case 'set':
-        each(change.newValues, cell => {
-          console.log('newValues', cell);
-        });
-        each(change.oldValues, cell => {
-          console.log('oldValues', cell);
-          /* no op */
-        });
+      case 'set': // caused by, e.g., change cell type
+        action = {
+          do: 'setCell',
+          doArguments: [change.newIndex, change.newValues[0].toJSON()],
+          undo: 'setCell',
+          undoArguments: [change.oldIndex, change.oldValues[0].toJSON()]
+        };
         break;
       default:
         return;
     }
 
+    Promise.resolve(this.tracker.applyAction(action!, true));
     console.groupEnd();
   }
 

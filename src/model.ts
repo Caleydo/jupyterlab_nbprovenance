@@ -2,7 +2,7 @@ import { VDomModel } from '@jupyterlab/apputils';
 import { ProvenanceGraph, ProvenanceNode, ProvenanceGraphTraverser, IProvenanceGraphTraverser, IProvenanceGraph, ActionFunctionRegistry, IActionFunctionRegistry } from '@visualstorytelling/provenance-core';
 import { JupyterLab } from '@jupyterlab/application';
 import { nbformat } from '@jupyterlab/coreutils';
-import { INotebookModel } from '@jupyterlab/notebook';
+import { INotebookModel, NotebookActions, Notebook } from '@jupyterlab/notebook';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { ICellModel } from '@jupyterlab/cells';
 
@@ -15,6 +15,7 @@ export class NbProvenanceModel extends VDomModel {
     private _registry: IActionFunctionRegistry;
     private _graph: IProvenanceGraph;
 
+    public notebook: Notebook;
     public context: DocumentRegistry.IContext<INotebookModel>;
 
     public pauseTracking: boolean = false;
@@ -31,6 +32,8 @@ export class NbProvenanceModel extends VDomModel {
         this._registry = new ActionFunctionRegistry();
         this._registry.register('addCell', this.addCell, this);
         this._registry.register('removeCell', this.removeCell, this);
+        this._registry.register('moveCell', this.moveCell, this);
+        this._registry.register('setCell', this.setCell, this);
 
         this._travserer = new ProvenanceGraphTraverser(this._registry, this.graph);
 
@@ -91,4 +94,23 @@ export class NbProvenanceModel extends VDomModel {
         return null;
     }
 
+    private async moveCell(fromIndex: number, toIndex: number) {
+        console.log('moved cell to index', fromIndex, toIndex);
+
+        this.pauseTracking = true;
+        this.context.model.cells.move(fromIndex, toIndex);
+        this.pauseTracking = false;
+
+        return null;
+    }
+
+    private async setCell(index: number, cell: nbformat.ICell) {
+        console.log('set cell at index', index, cell);
+
+        this.pauseTracking = true;
+        NotebookActions.changeCellType(this.notebook, cell.cell_type as nbformat.CellType);
+        this.pauseTracking = false;
+
+        return null;
+    }
 }
