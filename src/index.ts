@@ -1,19 +1,19 @@
-import { JupyterLab, JupyterLabPlugin, ILayoutRestorer } from "@jupyterlab/application";
-import { ProvenanceExtension } from "./provenance-tracker";
-import "../style/index.css";
-import { INotebookTracker, NotebookPanel, INotebookModel } from "@jupyterlab/notebook";
-import { ICommandPalette } from "@jupyterlab/apputils";
+import { JupyterLab, JupyterLabPlugin, ILayoutRestorer } from '@jupyterlab/application';
+import { ProvenanceExtension } from './provenance-tracker';
+import '../style/index.css';
+import { INotebookTracker, NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
+import { ICommandPalette } from '@jupyterlab/apputils';
 import { IMainMenu } from '@jupyterlab/mainmenu';
-import { Token } from "@phosphor/coreutils";
-import { DocumentRegistry } from "@jupyterlab/docregistry";
-import { NbProvenanceView } from "./provenance-view";
-import { NbProvenanceModel } from "./model";
+import { Token } from '@phosphor/coreutils';
+import { DocumentRegistry } from '@jupyterlab/docregistry';
+import { NbProvenanceView } from './provenance-view';
+import { NbProvenanceModel } from './model';
 
 
 /**
  * The token identifying the JupyterLab plugin.
  */
-export const INbProvenanceExtension = new Token<INbProvenanceExtension>('jupyter.extensions.nbprovenance');
+export const nbProvenanceExtension = new Token<INbProvenanceExtension>('jupyter.extensions.nbprovenance');
 
 export type INbProvenanceExtension = DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>;
 
@@ -80,10 +80,10 @@ function addCommands(
  * Initialization data for the jupyterlab_nbprovenance extension.
  */
 const extension: JupyterLabPlugin<void> = {
-  id: "jupyterlab_nbprovenance",
+  id: 'jupyterlab_nbprovenance',
   autoStart: true,
   requires: [ILayoutRestorer, INotebookTracker, ICommandPalette, IMainMenu],
-  provides: INbProvenanceExtension,
+  provides: nbProvenanceExtension,
   activate: (
     app: JupyterLab,
     restorer: ILayoutRestorer,
@@ -92,7 +92,7 @@ const extension: JupyterLabPlugin<void> = {
     mainMenu: IMainMenu
   ) => {
 
-    console.log("JupyterLab extension jupyterlab_nbprovenance is activated!");
+    console.log('JupyterLab extension jupyterlab_nbprovenance is activated!');
 
     const model = new NbProvenanceModel(app);
 

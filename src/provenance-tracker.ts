@@ -1,14 +1,14 @@
-import { IDisposable, DisposableDelegate } from "@phosphor/disposable";
-import { DocumentRegistry } from "@jupyterlab/docregistry";
-import { NotebookPanel, INotebookModel } from "@jupyterlab/notebook";
-import { find, each } from "@phosphor/algorithm";
-import { CommandRegistry } from "@phosphor/commands";
-import { ToolbarButton, Toolbar } from "@jupyterlab/apputils";
-import { CommandIDs } from ".";
-import { ProvenanceTracker, IProvenanceTracker } from "@visualstorytelling/provenance-core";
-import { IObservableList } from "@jupyterlab/observables";
-import { ICellModel } from "@jupyterlab/cells";
-import { NbProvenanceModel } from "./model";
+import { IDisposable, DisposableDelegate } from '@phosphor/disposable';
+import { DocumentRegistry } from '@jupyterlab/docregistry';
+import { NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
+import { find, each } from '@phosphor/algorithm';
+import { CommandRegistry } from '@phosphor/commands';
+import { ToolbarButton, Toolbar } from '@jupyterlab/apputils';
+import { CommandIDs } from '.';
+import { ProvenanceTracker, IProvenanceTracker } from '@visualstorytelling/provenance-core';
+import { IObservableList } from '@jupyterlab/observables';
+import { ICellModel } from '@jupyterlab/cells';
+import { NbProvenanceModel } from './model';
 
 
 /**
@@ -94,12 +94,12 @@ export class ProvenanceExtension
     list: IObservableList<ICellModel>,
     change: IObservableList.IChangedArgs<ICellModel>
   ): void {
-    console.groupCollapsed("cells changed ->", change.type);
+    console.groupCollapsed('cells changed ->', change.type);
 
     switch (change.type) {
-      case "add":
+      case 'add':
         each(change.newValues, cell => {
-          console.log("newValues", cell);
+          console.log('newValues', cell);
         });
         Promise.resolve(
           this.tracker.applyAction({
@@ -110,9 +110,9 @@ export class ProvenanceExtension
           }, false)
         );
         break;
-      case "remove":
+      case 'remove':
         each(change.oldValues, cell => {
-          console.log("oldValues", cell);
+          console.log('oldValues', cell);
           /* no op */
         });
         Promise.resolve(
@@ -124,17 +124,17 @@ export class ProvenanceExtension
           }, false)
         );
         break;
-      case "move":
+      case 'move':
         each(change.newValues, cell => {
-          console.log("newValues", cell);
+          console.log('newValues', cell);
         });
         break;
-      case "set":
+      case 'set':
         each(change.newValues, cell => {
-          console.log("newValues", cell);
+          console.log('newValues', cell);
         });
         each(change.oldValues, cell => {
-          console.log("oldValues", cell);
+          console.log('oldValues', cell);
           /* no op */
         });
         break;

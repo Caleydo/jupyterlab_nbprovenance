@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 
-import { Widget, BoxLayout } from "@phosphor/widgets";
-import { Kernel } from "@jupyterlab/services";
-import { Toolbar, ToolbarButton, VDomRenderer } from "@jupyterlab/apputils";
-import { NbProvenanceModel } from "./model";
+import { Widget, BoxLayout } from '@phosphor/widgets';
+import { Kernel } from '@jupyterlab/services';
+import { Toolbar, ToolbarButton, VDomRenderer } from '@jupyterlab/apputils';
+import { NbProvenanceModel } from './model';
 import { ProvenanceGraphTree } from '@visualstorytelling/provenance-react';
 
 /**

@@ -1,8 +1,8 @@
-import { VDomModel } from "@jupyterlab/apputils";
-import { ProvenanceGraph, ProvenanceNode, ProvenanceGraphTraverser, IProvenanceGraphTraverser, IProvenanceGraph, ActionFunctionRegistry, IActionFunctionRegistry } from "@visualstorytelling/provenance-core";
-import { JupyterLab } from "@jupyterlab/application";
-import { nbformat } from "@jupyterlab/coreutils";
-import { JSONValue } from "@phosphor/coreutils";
+import { VDomModel } from '@jupyterlab/apputils';
+import { ProvenanceGraph, ProvenanceNode, ProvenanceGraphTraverser, IProvenanceGraphTraverser, IProvenanceGraph, ActionFunctionRegistry, IActionFunctionRegistry } from '@visualstorytelling/provenance-core';
+import { JupyterLab } from '@jupyterlab/application';
+import { nbformat } from '@jupyterlab/coreutils';
+import { JSONValue } from '@phosphor/coreutils';
 
 /**
  * Model for a provenance graph.
@@ -40,7 +40,7 @@ export class NbProvenanceModel extends VDomModel {
     }
 
     public get graph(): ProvenanceGraph {
-        return <ProvenanceGraph>this._graph;
+        return this._graph as ProvenanceGraph;
     }
 
     public get registry(): IActionFunctionRegistry {
@@ -49,12 +49,12 @@ export class NbProvenanceModel extends VDomModel {
 
 
     private async addCell(newCell: nbformat.ICell, notebookJSON: JSONValue) {
-        console.log('add this cell', newCell)
+        console.log('add this cell', newCell);
         return notebookJSON;
     }
 
     private async removeCell(oldCell: nbformat.ICell, notebookJSON: JSONValue) {
-        console.log('remove this cell', oldCell)
+        console.log('remove this cell', oldCell);
         return notebookJSON;
     }
 
