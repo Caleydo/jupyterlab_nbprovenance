@@ -101,6 +101,11 @@ export class ProvenanceExtension
     panel.notebook.model.cells.changed.connect(this._onCellsChanged, this);
     panel.notebook.activeCellChanged.connect(activeCellChangedListener);
 
+    // TODO executed is a private signal (see @jupyterlab/notebook/src/actions.tsx) --> ask jupyterlab team to make it public
+    // NotebookActions.executed.connect((obj: { notebook: Notebook; cell: Cell }) => {
+    //   console.log('executed', obj);
+    // }, this);
+
     return new DisposableDelegate(() => {
       panel.notebook.model.cells.changed.disconnect(this._onCellsChanged);
       panel.notebook.activeCellChanged.disconnect(activeCellChangedListener);
