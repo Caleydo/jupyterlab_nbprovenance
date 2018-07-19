@@ -1,13 +1,13 @@
 import { IDisposable, DisposableDelegate } from '@phosphor/disposable';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
-import { NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
+import { NotebookPanel, INotebookModel, Notebook } from '@jupyterlab/notebook';
 import { find } from '@phosphor/algorithm';
 import { CommandRegistry } from '@phosphor/commands';
 import { ToolbarButton, Toolbar } from '@jupyterlab/apputils';
 import { CommandIDs } from '.';
 import { ProvenanceTracker, IProvenanceTracker, Action } from '@visualstorytelling/provenance-core';
 import { IObservableList } from '@jupyterlab/observables';
-import { ICellModel } from '@jupyterlab/cells';
+import { ICellModel, Cell } from '@jupyterlab/cells';
 import { NbProvenanceModel } from './model';
 
 
@@ -79,10 +79,31 @@ export class ProvenanceExtension
 
     this.tracker = new ProvenanceTracker(this.nbProvenanceModel.registry, this.nbProvenanceModel.graph);
 
+    let prevActiveCellIndex = -1;
+
+    const activeCellChangedListener = (notebook: Notebook, args: Cell) => {
+      if (this.nbProvenanceModel.pauseTracking) {
+        return;
+      }
+
+      const action = {
+        do: 'changeActiveCell',
+        doArguments: [notebook.activeCellIndex],
+        undo: 'changeActiveCell',
+        undoArguments: [prevActiveCellIndex]
+      };
+
+      Promise.resolve(this.tracker.applyAction(action, true));
+
+      prevActiveCellIndex = notebook.activeCellIndex;
+    };
+
     panel.notebook.model.cells.changed.connect(this._onCellsChanged, this);
+    panel.notebook.activeCellChanged.connect(activeCellChangedListener);
 
     return new DisposableDelegate(() => {
       panel.notebook.model.cells.changed.disconnect(this._onCellsChanged);
+      panel.notebook.activeCellChanged.disconnect(activeCellChangedListener);
     });
   }
 
@@ -94,7 +115,6 @@ export class ProvenanceExtension
     change: IObservableList.IChangedArgs<ICellModel>
   ): void {
     if (this.nbProvenanceModel.pauseTracking) {
-      console.log('tracking paused');
       return;
     }
 

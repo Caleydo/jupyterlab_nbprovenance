@@ -34,6 +34,7 @@ export class NbProvenanceModel extends VDomModel {
         this._registry.register('removeCell', this.removeCell, this);
         this._registry.register('moveCell', this.moveCell, this);
         this._registry.register('setCell', this.setCell, this);
+        this._registry.register('changeActiveCell', this.changeActiveCell, this);
 
         this._travserer = new ProvenanceGraphTraverser(this._registry, this.graph);
 
@@ -109,6 +110,16 @@ export class NbProvenanceModel extends VDomModel {
 
         this.pauseTracking = true;
         NotebookActions.changeCellType(this.notebook, cell.cell_type as nbformat.CellType);
+        this.pauseTracking = false;
+
+        return null;
+    }
+
+    private async changeActiveCell(index: number) {
+        console.log('change active cell to index', index);
+
+        this.pauseTracking = true;
+        this.notebook.activeCellIndex = index;
         this.pauseTracking = false;
 
         return null;
