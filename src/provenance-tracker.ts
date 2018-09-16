@@ -3,7 +3,7 @@ import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { NotebookPanel, INotebookModel, Notebook } from '@jupyterlab/notebook';
 import { find } from '@phosphor/algorithm';
 import { CommandRegistry } from '@phosphor/commands';
-import { ToolbarButton, Toolbar } from '@jupyterlab/apputils';
+import { ToolbarButton, CommandToolbarButton } from '@jupyterlab/apputils';
 import { CommandIDs } from '.';
 import { ProvenanceTracker, IProvenanceTracker, Action } from '@visualstorytelling/provenance-core';
 import { IObservableList } from '@jupyterlab/observables';
@@ -47,7 +47,7 @@ export class ProvenanceExtension
     });
     let i = 1;
     for (let id of [CommandIDs.newProvenance]) {
-      let button = Toolbar.createFromCommand(this.commands, id);
+      let button = new CommandToolbarButton({ commands: this.commands, id });
       if (button === null) {
         throw new Error('Cannot create button, command not registered!');
       }
@@ -75,7 +75,7 @@ export class ProvenanceExtension
   ) {
     console.log(panel, context);
     this.nbProvenanceModel.context = context;
-    this.nbProvenanceModel.notebook = panel.notebook;
+    this.nbProvenanceModel.notebook = panel.content;
 
     this.tracker = new ProvenanceTracker(this.nbProvenanceModel.registry, this.nbProvenanceModel.graph);
 
@@ -98,8 +98,8 @@ export class ProvenanceExtension
       prevActiveCellIndex = notebook.activeCellIndex;
     };
 
-    panel.notebook.model.cells.changed.connect(this._onCellsChanged, this);
-    panel.notebook.activeCellChanged.connect(activeCellChangedListener);
+    panel.content.model.cells.changed.connect(this._onCellsChanged, this);
+    panel.content.activeCellChanged.connect(activeCellChangedListener);
 
     // TODO executed is a private signal (see @jupyterlab/notebook/src/actions.tsx) --> ask jupyterlab team to make it public
     // NotebookActions.executed.connect((obj: { notebook: Notebook; cell: Cell }) => {
@@ -107,8 +107,8 @@ export class ProvenanceExtension
     // }, this);
 
     return new DisposableDelegate(() => {
-      panel.notebook.model.cells.changed.disconnect(this._onCellsChanged);
-      panel.notebook.activeCellChanged.disconnect(activeCellChangedListener);
+      panel.content.model.cells.changed.disconnect(this._onCellsChanged);
+      panel.content.activeCellChanged.disconnect(activeCellChangedListener);
     });
   }
 

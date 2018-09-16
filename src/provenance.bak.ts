@@ -43,22 +43,22 @@ export class ProvenanceExtension
       console.log('selectionChanged', notebook);
     };
 
-    panel.notebook.model.cells.changed.connect(this._onCellsChanged, this);
+    panel.content.model.cells.changed.connect(this._onCellsChanged, this);
 
-    panel.notebook.modelChanged.connect(modelChangedListener);
+    panel.content.modelChanged.connect(modelChangedListener);
     // panel.notebook.modelContentChanged.connect(modelContentChangedListener);
-    panel.notebook.stateChanged.connect(stateChangedListener);
-    panel.notebook.activeCellChanged.connect(activeCellChangedListener);
-    panel.notebook.selectionChanged.connect(selectionChangedListener);
+    panel.content.stateChanged.connect(stateChangedListener);
+    panel.content.activeCellChanged.connect(activeCellChangedListener);
+    panel.content.selectionChanged.connect(selectionChangedListener);
 
     return new DisposableDelegate(() => {
-      panel.notebook.modelChanged.disconnect(modelChangedListener);
+      panel.content.modelChanged.disconnect(modelChangedListener);
       // panel.notebook.modelContentChanged.disconnect(
       //   modelContentChangedListener
       // );
-      panel.notebook.stateChanged.disconnect(stateChangedListener);
-      panel.notebook.activeCellChanged.disconnect(activeCellChangedListener);
-      panel.notebook.selectionChanged.disconnect(selectionChangedListener);
+      panel.content.stateChanged.disconnect(stateChangedListener);
+      panel.content.activeCellChanged.disconnect(activeCellChangedListener);
+      panel.content.selectionChanged.disconnect(selectionChangedListener);
     });
   }
 
