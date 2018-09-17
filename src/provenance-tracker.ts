@@ -1,10 +1,5 @@
-import { IDisposable, DisposableDelegate } from '@phosphor/disposable';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { NotebookPanel, INotebookModel, Notebook } from '@jupyterlab/notebook';
-import { find } from '@phosphor/algorithm';
-import { CommandRegistry } from '@phosphor/commands';
-import { ToolbarButton, CommandToolbarButton } from '@jupyterlab/apputils';
-import { CommandIDs } from '.';
 import { ProvenanceTracker, IProvenanceTracker, Action } from '@visualstorytelling/provenance-core';
 import { IObservableList } from '@jupyterlab/observables';
 import { ICellModel, Cell } from '@jupyterlab/cells';
@@ -14,62 +9,18 @@ import { NbProvenanceModel } from './model';
 /**
  * A notebook widget extension that adds a button to the toolbar.
  */
-export class ProvenanceExtension
-  implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
-
-  private commands: CommandRegistry;
+export class ProvenanceExtension {
 
   private tracker: IProvenanceTracker;
 
   /**
    *
    */
-  constructor(commands: CommandRegistry, private nbProvenanceModel: NbProvenanceModel) {
-    this.commands = commands;
+  constructor(private nbProvenanceModel: NbProvenanceModel) {
+    //
   }
 
-  /**
-   * Create a new extension object
-   */
-  createNew(
-    panel: NotebookPanel,
-    context: DocumentRegistry.IContext<INotebookModel>
-  ): IDisposable {
-    // Add buttons to toolbar
-    let buttons: ToolbarButton[] = [];
-    let insertionPoint = -1;
-    find(panel.toolbar.children(), (tbb: ToolbarButton, index) => {
-      if (tbb.hasClass('jp-Notebook-toolbarCellType')) {
-        insertionPoint = index;
-        return true;
-      }
-      return false;
-    });
-    let i = 1;
-    for (let id of [CommandIDs.newProvenance]) {
-      let button = new CommandToolbarButton({ commands: this.commands, id });
-      if (button === null) {
-        throw new Error('Cannot create button, command not registered!');
-      }
-      if (insertionPoint >= 0) {
-        panel.toolbar.insertItem(insertionPoint + i++, this.commands.label(id), button);
-      } else {
-        panel.toolbar.addItem(this.commands.label(id), button);
-      }
-      buttons.push(button);
-    }
-
-    this.initTracking(panel, context);
-
-    return new DisposableDelegate(() => {
-      // Cleanup extension here
-      for (let btn of buttons) {
-        btn.dispose();
-      }
-    });
-  }
-
-  private initTracking(
+  public initTracking(
     panel: NotebookPanel,
     context: DocumentRegistry.IContext<INotebookModel>
   ) {
@@ -106,10 +57,10 @@ export class ProvenanceExtension
     //   console.log('executed', obj);
     // }, this);
 
-    return new DisposableDelegate(() => {
-      panel.content.model.cells.changed.disconnect(this._onCellsChanged);
-      panel.content.activeCellChanged.disconnect(activeCellChangedListener);
-    });
+    // return new DisposableDelegate(() => {
+    //   panel.content.model.cells.changed.disconnect(this._onCellsChanged);
+    //   panel.content.activeCellChanged.disconnect(activeCellChangedListener);
+    // });
   }
 
   /**

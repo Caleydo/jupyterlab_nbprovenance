@@ -1,47 +1,44 @@
 'use strict';
 
 import * as React from 'react';
-
 import { Widget, BoxLayout } from '@phosphor/widgets';
-import { Kernel } from '@jupyterlab/services';
-import { Toolbar, ToolbarButton, VDomRenderer } from '@jupyterlab/apputils';
+import { VDomRenderer } from '@jupyterlab/apputils';
 import { NbProvenanceModel } from './model';
 import { ProvenanceGraphTree } from '@visualstorytelling/provenance-react';
+import { INotebookTracker } from '@jupyterlab/notebook';
 
 /**
  * The main view for the notebook provenance.
  */
 export class NbProvenanceView extends Widget {
 
-    private _model: NbProvenanceModel;
+    // private tracker: INotebookTracker;
 
-    private _toolbar: Toolbar<Widget>;
-    private _provenancegraph: ProvenanceGraphView;
+    // private _toolbar: Toolbar<Widget>;
+    private _provenancegraph: VDomRenderer<any>;
 
-    protected expandAllButton: ToolbarButton;
-    protected collapseAllButton: ToolbarButton;
-
-    constructor(kernel: Kernel.IKernelConnection, model: NbProvenanceModel) {
+    constructor(tracker: INotebookTracker) {
         super();
-        this._model = model;
+        // this.tracker = tracker;
+
+        this.id = 'nbprovenance-view';
 
         this.addClass('jp-nbprovenance-view');
-        this.id = `nbprovenance-${kernel.id}`;
-        this.title.label = 'NB Provenance';
         this.title.closable = true;
+        this.title.caption = 'Notebook Provenance';
         this.title.iconClass = 'jp-nbprovenanceIcon';
 
         let layout = this.layout = new BoxLayout();
 
-        this._toolbar = new Toolbar();
-        this._toolbar.addClass('jp-nbprovenance-toolbar');
+        // this._toolbar = new Toolbar();
+        // this._toolbar.addClass('jp-nbprovenance-toolbar');
 
-        this._provenancegraph = new ProvenanceGraphView(this._model);
+        this._provenancegraph = new NoProvenanceGraphAvailable();
 
-        layout.addWidget(this._toolbar);
+        // layout.addWidget(this._toolbar);
         layout.addWidget(this._provenancegraph);
 
-        BoxLayout.setStretch(this._toolbar, 0);
+        // BoxLayout.setStretch(this._toolbar, 0);
         BoxLayout.setStretch(this._provenancegraph, 1);
     }
 
@@ -67,3 +64,22 @@ export class ProvenanceGraphView extends VDomRenderer<NbProvenanceModel> {
         return [<ProvenanceGraphTree traverser={model.traverser} />];
     }
 }
+
+/**
+ * The main view for the provenance graph.
+ */
+export class NoProvenanceGraphAvailable extends VDomRenderer<null> {
+    constructor() {
+        super();
+        this.id = `nbprovenance-graph`;
+        this.addClass('jp-nbprovenance-graph');
+    }
+
+    /**
+     * Render the extension discovery view using the virtual DOM.
+     */
+    protected render(): React.ReactElement<any>[] {
+        return [<div>No provenance graph available. No active notebook!</div>];
+    }
+}
+

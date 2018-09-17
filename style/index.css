@@ -1,12 +1,26 @@
 .jp-nbprovenance-view .jp-nbprovenance-toolbar {
-    border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
-    padding: 2px;
-    min-height: var(--jp-private-notebook-panel-toolbar-height);
-    box-shadow: var(--jp-toolbar-box-shadow);
-    background: var(--jp-toolbar-background);
-    z-index: 1;
-  }
-  
-  .jp-nbprovenanceIcon {
-    background-image: var(--jp-icon-link);
-  }
+  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
+  padding: 2px;
+  min-height: var(--jp-private-notebook-panel-toolbar-height);
+  box-shadow: var(--jp-toolbar-box-shadow);
+  background: var(--jp-toolbar-background);
+  z-index: 1;
+}
+
+.jp-nbprovenance-view .jp-nbprovenance-graph {
+  background: var(--jp-toolbar-background);
+}
+
+.jp-SideBar .p-TabBar-tabIcon.jp-nbprovenanceIcon {
+  min-width: 20px;
+  min-height: 20px;
+  background-size: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.jp-nbprovenanceIcon {
+  background-image: var(--jp-icon-link);
+}
