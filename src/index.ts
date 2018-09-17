@@ -1,6 +1,6 @@
 import { JupyterLab, JupyterLabPlugin, ILayoutRestorer } from '@jupyterlab/application';
 import '../style/index.css';
-import { INotebookTracker, NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
+import { NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
 import { Token } from '@phosphor/coreutils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { NbProvenanceView } from './provenance-view';
@@ -26,15 +26,14 @@ export namespace CommandIDs {
 const extension: JupyterLabPlugin<void> = {
   id: 'jupyterlab_nbprovenance',
   autoStart: true,
-  requires: [ILayoutRestorer, INotebookTracker],
+  requires: [ILayoutRestorer],
   // provides: nbProvenanceExtension,
   activate: (
     app: JupyterLab,
-    restorer: ILayoutRestorer,
-    tracker: INotebookTracker
+    restorer: ILayoutRestorer
   ) => {
     console.log('JupyterLab extension jupyterlab_nbprovenance is activated!');
-    const provenanceView = new NbProvenanceView(tracker);
+    const provenanceView = new NbProvenanceView(app, app.shell);
     restorer.add(provenanceView, CommandIDs.provenanceView);
     app.shell.addToLeftArea(provenanceView, { rank: 700 });
   }
