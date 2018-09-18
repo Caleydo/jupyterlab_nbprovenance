@@ -1,7 +1,8 @@
-import { ProvenanceGraph, ProvenanceNode, ProvenanceGraphTraverser, IProvenanceGraphTraverser, IProvenanceGraph, ActionFunctionRegistry, IActionFunctionRegistry } from '@visualstorytelling/provenance-core';
+import { ProvenanceGraph, ProvenanceNode, ProvenanceGraphTraverser, IProvenanceGraphTraverser, IProvenanceGraph, ActionFunctionRegistry, IActionFunctionRegistry, IProvenanceTracker, ProvenanceTracker } from '@visualstorytelling/provenance-core';
 import { JupyterLab } from '@jupyterlab/application';
 import { Notebook } from '@jupyterlab/notebook';
 import { ActionFunctions } from './action-functions';
+import { NotebookProvenanceTracker } from './provenance-tracker';
 
 /**
  * Model for a provenance graph.
@@ -12,6 +13,8 @@ export class NotebookProvenance {
     private _registry: IActionFunctionRegistry;
     private _graph: IProvenanceGraph;
     private _actionFunctions: ActionFunctions;
+    private _tracker: IProvenanceTracker;
+    private _nbtracker: NotebookProvenanceTracker;
 
     constructor(private app: JupyterLab, public readonly notebook: Notebook) {
         this.init();
@@ -29,7 +32,9 @@ export class NotebookProvenance {
         this._registry.register('setCell', this._actionFunctions.setCell, this._actionFunctions);
         this._registry.register('changeActiveCell', this._actionFunctions.changeActiveCell, this._actionFunctions);
 
-        this._traverser = new ProvenanceGraphTraverser(this._registry, this.graph);
+        this._traverser = new ProvenanceGraphTraverser(this._registry, this._graph);
+        this._tracker = new ProvenanceTracker(this._registry, this._graph);
+        this._nbtracker = new NotebookProvenanceTracker(this);
     }
 
     protected onNodeAdded(node: ProvenanceNode) {
@@ -38,6 +43,14 @@ export class NotebookProvenance {
 
     public get traverser(): IProvenanceGraphTraverser {
         return this._traverser;
+    }
+
+    public get tracker(): IProvenanceTracker {
+        return this._tracker;
+    }
+
+    public get nbtracker(): NotebookProvenanceTracker {
+        return this._nbtracker;
     }
 
     public get pauseTracking() {

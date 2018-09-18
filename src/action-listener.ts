@@ -1,12 +1,11 @@
 import * as nb from '@jupyterlab/notebook';
-import { notebookModelCache } from '.';
 
 const handler = {
     apply: function(target: any, thisArg: any, argumentsList: any) {
-        const nbprov = notebookModelCache.get(argumentsList[0]);
-        if (nbprov) {
-            (nbprov as any).tracker[target.name](argumentsList);
-        }
+        // const nbprov = notebookModelCache.get(argumentsList[0]);
+        // if (nbprov) {
+        //     (nbprov as any).tracker[target.name](argumentsList);
+        // }
         console.log(['Proxy called via apply :', target.name, argumentsList]);
         return target.apply(thisArg, argumentsList);
     }

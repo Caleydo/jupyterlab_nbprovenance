@@ -1,30 +1,22 @@
 import { Notebook } from '@jupyterlab/notebook';
-import { ProvenanceTracker, IProvenanceTracker, Action } from '@visualstorytelling/provenance-core';
+import { Action } from '@visualstorytelling/provenance-core';
 import { IObservableList } from '@jupyterlab/observables';
-import { ICellModel, Cell } from '@jupyterlab/cells';
+import { ICellModel } from '@jupyterlab/cells';
 import { NotebookProvenance } from './notebook-provenance';
 
 
 /**
  * A notebook widget extension that adds a button to the toolbar.
  */
-export class ProvenanceExtension {
-
-  private tracker: IProvenanceTracker;
+export class NotebookProvenanceTracker {
 
   /**
    *
    */
   constructor(private notebookProvenance: NotebookProvenance) {
-    //
-  }
-
-  public initTracking() {
-    this.tracker = new ProvenanceTracker(this.notebookProvenance.registry, this.notebookProvenance.graph);
-
     let prevActiveCellIndex = -1;
 
-    const activeCellChangedListener = (notebook: Notebook, args: Cell) => {
+    const activeCellChangedListener = (notebook: Notebook) => {
       if (this.notebookProvenance.pauseTracking) {
         return;
       }
@@ -36,7 +28,7 @@ export class ProvenanceExtension {
         undoArguments: [prevActiveCellIndex]
       };
 
-      Promise.resolve(this.tracker.applyAction(action, true));
+      Promise.resolve(this.notebookProvenance.tracker.applyAction(action, true));
 
       prevActiveCellIndex = notebook.activeCellIndex;
     };
@@ -108,7 +100,7 @@ export class ProvenanceExtension {
         return;
     }
 
-    Promise.resolve(this.tracker.applyAction(action!, true));
+    Promise.resolve(this.notebookProvenance.tracker.applyAction(action!, true));
     console.groupEnd();
   }
 
