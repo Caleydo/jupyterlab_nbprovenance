@@ -1,9 +1,8 @@
-import { DocumentRegistry } from '@jupyterlab/docregistry';
-import { NotebookPanel, INotebookModel, Notebook } from '@jupyterlab/notebook';
+import { Notebook } from '@jupyterlab/notebook';
 import { ProvenanceTracker, IProvenanceTracker, Action } from '@visualstorytelling/provenance-core';
 import { IObservableList } from '@jupyterlab/observables';
 import { ICellModel, Cell } from '@jupyterlab/cells';
-import { NbProvenanceModel } from './model';
+import { NotebookProvenance } from './notebook-provenance';
 
 
 /**
@@ -16,24 +15,17 @@ export class ProvenanceExtension {
   /**
    *
    */
-  constructor(private nbProvenanceModel: NbProvenanceModel) {
+  constructor(private notebookProvenance: NotebookProvenance) {
     //
   }
 
-  public initTracking(
-    panel: NotebookPanel,
-    context: DocumentRegistry.IContext<INotebookModel>
-  ) {
-    console.log(panel, context);
-    this.nbProvenanceModel.context = context;
-    this.nbProvenanceModel.notebook = panel.content;
-
-    this.tracker = new ProvenanceTracker(this.nbProvenanceModel.registry, this.nbProvenanceModel.graph);
+  public initTracking() {
+    this.tracker = new ProvenanceTracker(this.notebookProvenance.registry, this.notebookProvenance.graph);
 
     let prevActiveCellIndex = -1;
 
     const activeCellChangedListener = (notebook: Notebook, args: Cell) => {
-      if (this.nbProvenanceModel.pauseTracking) {
+      if (this.notebookProvenance.pauseTracking) {
         return;
       }
 
@@ -49,8 +41,8 @@ export class ProvenanceExtension {
       prevActiveCellIndex = notebook.activeCellIndex;
     };
 
-    panel.content.model.cells.changed.connect(this._onCellsChanged, this);
-    panel.content.activeCellChanged.connect(activeCellChangedListener);
+    this.notebookProvenance.notebook.model.cells.changed.connect(this._onCellsChanged, this);
+    this.notebookProvenance.notebook.activeCellChanged.connect(activeCellChangedListener);
 
     // TODO executed is a private signal (see @jupyterlab/notebook/src/actions.tsx) --> ask jupyterlab team to make it public
     // NotebookActions.executed.connect((obj: { notebook: Notebook; cell: Cell }) => {
@@ -70,7 +62,7 @@ export class ProvenanceExtension {
     list: IObservableList<ICellModel>,
     change: IObservableList.IChangedArgs<ICellModel>
   ): void {
-    if (this.nbProvenanceModel.pauseTracking) {
+    if (this.notebookProvenance.pauseTracking) {
       return;
     }
 

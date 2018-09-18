@@ -1,27 +1,21 @@
-import { VDomModel } from '@jupyterlab/apputils';
 import { ProvenanceGraph, ProvenanceNode, ProvenanceGraphTraverser, IProvenanceGraphTraverser, IProvenanceGraph, ActionFunctionRegistry, IActionFunctionRegistry } from '@visualstorytelling/provenance-core';
 import { JupyterLab } from '@jupyterlab/application';
 import { nbformat } from '@jupyterlab/coreutils';
-import { INotebookModel, NotebookActions, Notebook } from '@jupyterlab/notebook';
-import { DocumentRegistry } from '@jupyterlab/docregistry';
+import { NotebookActions, Notebook } from '@jupyterlab/notebook';
 import { ICellModel } from '@jupyterlab/cells';
 
 /**
  * Model for a provenance graph.
  */
-export class NbProvenanceModel extends VDomModel {
+export class NotebookProvenance {
 
-    private _travserer: IProvenanceGraphTraverser;
+    private _traverser: IProvenanceGraphTraverser;
     private _registry: IActionFunctionRegistry;
     private _graph: IProvenanceGraph;
 
-    public notebook: Notebook;
-    public context: DocumentRegistry.IContext<INotebookModel>;
-
     public pauseTracking: boolean = false;
 
-    constructor(private app: JupyterLab) {
-        super();
+    constructor(private app: JupyterLab, public readonly notebook: Notebook) {
         this.init();
     }
 
@@ -36,16 +30,15 @@ export class NbProvenanceModel extends VDomModel {
         this._registry.register('setCell', this.setCell, this);
         this._registry.register('changeActiveCell', this.changeActiveCell, this);
 
-        this._travserer = new ProvenanceGraphTraverser(this._registry, this.graph);
+        this._traverser = new ProvenanceGraphTraverser(this._registry, this.graph);
     }
 
     protected onNodeAdded(node: ProvenanceNode) {
         console.log('node added to graph', node);
-        this.stateChanged.emit(undefined);
     }
 
     public get traverser(): IProvenanceGraphTraverser {
-        return this._travserer;
+        return this._traverser;
     }
 
     public get graph(): ProvenanceGraph {
@@ -61,7 +54,7 @@ export class NbProvenanceModel extends VDomModel {
         console.log('added cell at index', index, cell);
 
         // code from NotebookModel.fromJSON() --> @jupyterlab/notebook/src/model.ts
-        const factory = this.context.model.contentFactory;
+        const factory = this.notebook.model.contentFactory;
         let cellModel: ICellModel;
 
         switch (cell.cell_type) {
@@ -80,7 +73,7 @@ export class NbProvenanceModel extends VDomModel {
         }
 
         this.pauseTracking = true;
-        this.context.model.cells.insert(index, cellModel);
+        this.notebook.model.cells.insert(index, cellModel);
         this.pauseTracking = false;
 
         return null;
@@ -89,7 +82,7 @@ export class NbProvenanceModel extends VDomModel {
     private async removeCell(index: number) {
         console.log('removed cell at index', index);
         this.pauseTracking = true;
-        this.context.model.cells.remove(index);
+        this.notebook.model.cells.remove(index);
         this.pauseTracking = false;
         return null;
     }
@@ -98,7 +91,7 @@ export class NbProvenanceModel extends VDomModel {
         console.log('moved cell to index', fromIndex, toIndex);
 
         this.pauseTracking = true;
-        this.context.model.cells.move(fromIndex, toIndex);
+        this.notebook.model.cells.move(fromIndex, toIndex);
         this.pauseTracking = false;
 
         return null;

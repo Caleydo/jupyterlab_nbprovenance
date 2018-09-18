@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { NbProvenanceModel } from './model';
+import { NotebookProvenance } from './notebook-provenance';
 import { ProvenanceTreeVisualizationReact } from '@visualstorytelling/provenance-tree-visualization-react';
 import { ApplicationShell } from '@jupyterlab/application';
-import { NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
+import { NotebookPanel, Notebook } from '@jupyterlab/notebook';
 import { notebookModelCache } from '.';
 import { Widget } from '@phosphor/widgets';
 import { Message } from '@phosphor/messaging';
@@ -15,9 +15,9 @@ import { ProvenanceGraphTraverser } from '@visualstorytelling/provenance-core';
 /**
  * The main view for the notebook provenance.
  */
-export class NbProvenanceView extends Widget {
+export class SideBar extends Widget {
 
-    private model: NbProvenanceModel | null = null;
+    private notebookProvenance: NotebookProvenance | null = null;
 
     constructor(shell: ApplicationShell) {
         super();
@@ -27,13 +27,13 @@ export class NbProvenanceView extends Widget {
         shell.currentChanged.connect((shell: ApplicationShell) => {
             const currentWidget = shell.currentWidget;
             if (currentWidget === null || (currentWidget instanceof NotebookPanel) === false) {
-                this.model = null;
+                this.notebookProvenance = null;
                 this.update();
                 return;
             }
 
-            const notebook: INotebookModel = (currentWidget as NotebookPanel).content.model;
-            this.model = (notebookModelCache.has(notebook)) ? notebookModelCache.get(notebook)! : null;
+            const notebook: Notebook = (currentWidget as NotebookPanel).content;
+            this.notebookProvenance = (notebookModelCache.has(notebook)) ? notebookModelCache.get(notebook)! : null;
             this.update();
         });
     }
@@ -41,7 +41,7 @@ export class NbProvenanceView extends Widget {
     protected onUpdateRequest(msg: Message): void {
         ReactDOM.render(
             <div className='jp-nbprovenance-graph'>
-                <ProvenanceGraphTreeComponent model={this.model}></ProvenanceGraphTreeComponent>
+                <ProvenanceGraphTreeComponent notebookProvenance={this.notebookProvenance}></ProvenanceGraphTreeComponent>
             </div>,
             this.node
         );
@@ -59,7 +59,7 @@ export class NbProvenanceView extends Widget {
 }
 
 interface IProps {
-    model: NbProvenanceModel | null;
+    notebookProvenance: NotebookProvenance | null;
 }
 
 interface IState {
@@ -72,8 +72,8 @@ class ProvenanceGraphTreeComponent extends React.Component<IProps, IState> {
     }
 
     render() {
-        if (this.props.model) {
-            return <ProvenanceTreeVisualizationReact traverser={this.props.model.traverser  as ProvenanceGraphTraverser} />;
+        if (this.props.notebookProvenance) {
+            return <ProvenanceTreeVisualizationReact traverser={this.props.notebookProvenance.traverser as ProvenanceGraphTraverser} />;
         }
         return <div>No provenance graph available. No active notebook!</div>;
     }
