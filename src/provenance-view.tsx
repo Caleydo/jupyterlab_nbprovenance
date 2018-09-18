@@ -19,13 +19,13 @@ export class NbProvenanceView extends Widget {
     constructor(app: JupyterLab, shell: ApplicationShell) {
         super();
 
-        shell.activeChanged.connect((shell: ApplicationShell) => {
-            const activeWidget = shell.activeWidget;
-            if (activeWidget === null || (activeWidget instanceof NotebookPanel) === false) {
+        shell.currentChanged.connect((shell: ApplicationShell) => {
+            const currentWidget = shell.currentWidget;
+            if (currentWidget === null || (currentWidget instanceof NotebookPanel) === false) {
                 this._provenancegraph.model = null;
                 return;
             }
-            console.log('Yeah, it\'s a Notebook Panel!', activeWidget.title);
+            console.log('Yeah, it\'s a Notebook Panel!', currentWidget.title);
             this._provenancegraph.model = new NbProvenanceModel(app);
         });
 
