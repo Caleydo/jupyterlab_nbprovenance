@@ -37,7 +37,6 @@ export class NbProvenanceModel extends VDomModel {
         this._registry.register('changeActiveCell', this.changeActiveCell, this);
 
         this._travserer = new ProvenanceGraphTraverser(this._registry, this.graph);
-
     }
 
     protected onNodeAdded(node: ProvenanceNode) {

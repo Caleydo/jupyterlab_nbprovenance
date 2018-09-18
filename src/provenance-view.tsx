@@ -8,6 +8,7 @@ import { ProvenanceTreeVisualizationReact } from '@visualstorytelling/provenance
 import { ApplicationShell, JupyterLab } from '@jupyterlab/application';
 import { NotebookPanel } from '@jupyterlab/notebook';
 import { ProvenanceGraphTraverser } from '@visualstorytelling/provenance-core';
+import './action-listener';
 
 /**
  * The main view for the notebook provenance.
