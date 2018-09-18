@@ -1,4 +1,4 @@
-import { ProvenanceGraph, ProvenanceNode, ProvenanceGraphTraverser, IProvenanceGraphTraverser, IProvenanceGraph, ActionFunctionRegistry, IActionFunctionRegistry, IProvenanceTracker, ProvenanceTracker, serializeProvenanceGraph } from '@visualstorytelling/provenance-core';
+import { ProvenanceGraph, ProvenanceNode, ProvenanceGraphTraverser, IProvenanceGraphTraverser, IProvenanceGraph, ActionFunctionRegistry, IActionFunctionRegistry, IProvenanceTracker, ProvenanceTracker, serializeProvenanceGraph, restoreProvenanceGraph, SerializedProvenanceGraph } from '@visualstorytelling/provenance-core';
 import { JupyterLab } from '@jupyterlab/application';
 import { Notebook } from '@jupyterlab/notebook';
 import { ActionFunctions } from './action-functions';
@@ -21,7 +21,16 @@ export class NotebookProvenance {
     }
 
     private init() {
-        this._graph = new ProvenanceGraph({ name: 'nbprovenance.default.graph', version: this.app.info.version });
+        if (this.notebook.model.metadata.has('provenance')) {
+            const serGraph = this.notebook.model.metadata.get('provenance');
+            if (serGraph) {
+                this._graph = restoreProvenanceGraph(serGraph as SerializedProvenanceGraph);
+            } else {
+                this._graph = new ProvenanceGraph({ name: 'nbprovenance.default.graph', version: this.app.info.version });
+            }
+        } else {
+            this._graph = new ProvenanceGraph({ name: 'nbprovenance.default.graph', version: this.app.info.version });
+        }
         this._graph.on('nodeAdded', (node: ProvenanceNode) => this.onNodeAdded(node));
 
         this._actionFunctions = new ActionFunctions(this.notebook);
