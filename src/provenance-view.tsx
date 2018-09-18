@@ -1,76 +1,79 @@
 'use strict';
 
 import * as React from 'react';
-import { Widget, BoxLayout } from '@phosphor/widgets';
-import { VDomRenderer } from '@jupyterlab/apputils';
+import * as ReactDOM from 'react-dom';
 import { NbProvenanceModel } from './model';
 import { ProvenanceGraphTree } from '@visualstorytelling/provenance-react';
-import { ApplicationShell, JupyterLab } from '@jupyterlab/application';
-import { NotebookPanel } from '@jupyterlab/notebook';
+import { ApplicationShell } from '@jupyterlab/application';
+import { NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
+import { notebookModelCache } from '.';
+import { Widget } from '@phosphor/widgets';
+import { Message } from '@phosphor/messaging';
 
 /**
  * The main view for the notebook provenance.
  */
 export class NbProvenanceView extends Widget {
 
-    // private _toolbar: Toolbar<Widget>;
-    private _provenancegraph: VDomRenderer<any>;
+    private model: NbProvenanceModel | null = null;
 
-    constructor(app: JupyterLab, shell: ApplicationShell) {
+    constructor(shell: ApplicationShell) {
         super();
+
+        this.addClass('jp-nbprovenance-view');
 
         shell.currentChanged.connect((shell: ApplicationShell) => {
             const currentWidget = shell.currentWidget;
             if (currentWidget === null || (currentWidget instanceof NotebookPanel) === false) {
-                this._provenancegraph.model = null;
+                this.model = null;
+                this.update();
                 return;
             }
-            console.log('Yeah, it\'s a Notebook Panel!', currentWidget.title);
-            this._provenancegraph.model = new NbProvenanceModel(app);
+
+            const notebook: INotebookModel = (currentWidget as NotebookPanel).content.model;
+            this.model = (notebookModelCache.has(notebook)) ? notebookModelCache.get(notebook)! : null;
+            console.log(notebook, this.model);
+            this.update();
         });
-
-        this.id = 'nbprovenance-view';
-
-        this.addClass('jp-nbprovenance-view');
-        this.title.closable = true;
-        this.title.caption = 'Notebook Provenance';
-        this.title.iconClass = 'jp-nbprovenanceIcon';
-
-        this.prepareLayout();
     }
 
-    private prepareLayout() {
-        let layout = this.layout = new BoxLayout();
-
-        // this._toolbar = new Toolbar();
-        // this._toolbar.addClass('jp-nbprovenance-toolbar');
-
-        this._provenancegraph = new ProvenanceGraphView(null);
-
-        // layout.addWidget(this._toolbar);
-        layout.addWidget(this._provenancegraph);
-
-        // BoxLayout.setStretch(this._toolbar, 0);
-        BoxLayout.setStretch(this._provenancegraph, 1);
-    }
-}
-
-
-/**
- * The main view for the provenance graph.
- */
-export class ProvenanceGraphView extends VDomRenderer<NbProvenanceModel> {
-    constructor(public model: NbProvenanceModel | null) {
-        super();
-        this.model = model;
-        this.id = `nbprovenance-graph`;
-        this.addClass('jp-nbprovenance-graph');
+    protected onUpdateRequest(msg: Message): void {
+        ReactDOM.render(
+            <div className='jp-nbprovenance-graph'>
+                <ProvenanceGraphTreeComponent model={this.model}></ProvenanceGraphTreeComponent>
+            </div>,
+            this.node
+        );
     }
 
     /**
-     * Render the extension discovery view using the virtual DOM.
+     * Called after the widget is attached to the DOM
+     *
+     * Make sure the widget is rendered, even if the model has not changed.
      */
-    protected render(): React.ReactElement<any>[] {
-        return [(this.model) ? <ProvenanceGraphTree traverser={this.model.traverser} /> : <div>No provenance graph available. No active notebook!</div>];
+    protected onAfterAttach(msg: Message): void {
+        this.update();
+    }
+
+}
+
+interface IProps {
+    model: NbProvenanceModel | null;
+}
+
+interface IState {
+    //
+}
+
+class ProvenanceGraphTreeComponent extends React.Component<IProps, IState> {
+    constructor(public props: IProps, context?: any) {
+        super(props, context);
+    }
+
+    render() {
+        if (this.props.model) {
+            return <ProvenanceGraphTree traverser={this.props.model.traverser} />;
+        }
+        return <div>No provenance graph available. No active notebook!</div>;
     }
 }

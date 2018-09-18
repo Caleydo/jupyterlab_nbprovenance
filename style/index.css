@@ -1,14 +1,13 @@
-.jp-nbprovenance-view .jp-nbprovenance-toolbar {
-  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
-  padding: 2px;
-  min-height: var(--jp-private-notebook-panel-toolbar-height);
-  box-shadow: var(--jp-toolbar-box-shadow);
-  background: var(--jp-toolbar-background);
-  z-index: 1;
+.jp-nbprovenance-view {
+  display: flex;
 }
 
 .jp-nbprovenance-view .jp-nbprovenance-graph {
   background: var(--jp-toolbar-background);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex: 1 1 auto;
 }
 
 .jp-SideBar .p-TabBar-tabIcon.jp-nbprovenanceIcon {
