@@ -4,9 +4,10 @@ import * as React from 'react';
 import { Widget, BoxLayout } from '@phosphor/widgets';
 import { VDomRenderer } from '@jupyterlab/apputils';
 import { NbProvenanceModel } from './model';
-import { ProvenanceGraphTree } from '@visualstorytelling/provenance-react';
+import { ProvenanceTreeVisualizationReact } from '@visualstorytelling/provenance-tree-visualization-react';
 import { ApplicationShell, JupyterLab } from '@jupyterlab/application';
 import { NotebookPanel } from '@jupyterlab/notebook';
+import { ProvenanceGraphTraverser } from '@visualstorytelling/provenance-core';
 
 /**
  * The main view for the notebook provenance.
@@ -71,6 +72,6 @@ export class ProvenanceGraphView extends VDomRenderer<NbProvenanceModel> {
      * Render the extension discovery view using the virtual DOM.
      */
     protected render(): React.ReactElement<any>[] {
-        return [(this.model) ? <ProvenanceGraphTree traverser={this.model.traverser} /> : <div>No provenance graph available. No active notebook!</div>];
+        return [(this.model) ? <ProvenanceTreeVisualizationReact traverser={this.model.traverser as ProvenanceGraphTraverser} /> : <div>No provenance graph available. No active notebook!</div>];
     }
 }
