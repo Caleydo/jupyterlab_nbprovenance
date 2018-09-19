@@ -74,4 +74,11 @@ export class ActionFunctions {
 
         return null;
     }
+
+    public async cellValue(index: number, value: string) {
+        const cell = this.notebook.model.cells.get(index);
+        if (cell) {
+            cell.value.text = value;
+        }
+    }
 }
