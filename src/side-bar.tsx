@@ -5,7 +5,7 @@ import * as ReactDOM from 'react-dom';
 import { NotebookProvenance } from './notebook-provenance';
 import { ProvenanceTreeVisualizationReact } from '@visualstorytelling/provenance-tree-visualization-react';
 import { ApplicationShell } from '@jupyterlab/application';
-import { NotebookPanel, Notebook } from '@jupyterlab/notebook';
+import { NotebookPanel, Notebook, INotebookTracker } from '@jupyterlab/notebook';
 import { notebookModelCache } from '.';
 import { Widget } from '@phosphor/widgets';
 import { Message } from '@phosphor/messaging';
@@ -19,10 +19,22 @@ export class SideBar extends Widget {
 
     private notebookProvenance: NotebookProvenance | null = null;
 
-    constructor(shell: ApplicationShell) {
+    constructor(shell: ApplicationShell, nbTracker: INotebookTracker) {
         super();
 
         this.addClass('jp-nbprovenance-view');
+
+        nbTracker.widgetAdded.connect((_: INotebookTracker, nbPanel: NotebookPanel) => {
+            // wait until the session with the notebook model is ready
+            nbPanel.session.ready.then(() => {
+                // update provenance information only for the current widget
+                if (shell.currentWidget instanceof NotebookPanel && nbPanel === shell.currentWidget) {
+                    const notebook: Notebook = nbPanel.content;
+                    this.notebookProvenance = (notebookModelCache.has(notebook)) ? notebookModelCache.get(notebook)! : null;
+                    this.update();
+                }
+            });
+        });
 
         shell.currentChanged.connect((shell: ApplicationShell) => {
             const currentWidget = shell.currentWidget;
@@ -75,6 +87,6 @@ class ProvenanceGraphTreeComponent extends React.Component<IProps, IState> {
         if (this.props.notebookProvenance) {
             return <ProvenanceTreeVisualizationReact traverser={this.props.notebookProvenance.traverser as ProvenanceGraphTraverser} />;
         }
-        return <div>No provenance graph available. No active notebook!</div>;
+        return <div className='jp-nbprovenance-nograph'>No provenance available for the current tab.</div>;
     }
 }
