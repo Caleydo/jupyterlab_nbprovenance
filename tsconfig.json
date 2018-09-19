@@ -11,7 +11,7 @@
     "target": "es2015",
     "outDir": "./lib",
     "lib": [
-      "DOM",
+      "dom",
       "es2015",
       "es2017"
     ],
