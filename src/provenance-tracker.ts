@@ -48,7 +48,7 @@ export class NotebookProvenanceTracker {
       }
 
       const activeCell = notebook.activeCell;
-      if (prevActiveCellValue) {
+      if (typeof prevActiveCellValue !== 'undefined') {
         // Check if cell has changed
         const cell = notebook.model.cells.get(prevActiveCellIndex);
         if (cell && prevActiveCellValue !== cell.value.text) {

@@ -16,7 +16,7 @@ export const originalNotebookActions: any = {};
 console.log('Adding proxy around NotebookActions from @jupyterlab/notebook');
 
 const proxiedActions = new Set([
-    'changeCellType',
+    // 'changeCellType', handled in activeCellChanged
     'deleteCells',
     'deselectAll',
     'disableOutputScrolling',
