@@ -169,3 +169,29 @@ export class NotebookProvenanceTracker {
   }
 
 }
+
+export function findAction(actionName: string, args: any) {
+  const notebook: Notebook = args[0];
+  let action: Action;
+  switch (actionName) {
+    case 'enableOutputScrolling':
+      action = {
+        do: 'enableOutputScrolling',
+        doArguments: [notebook.activeCellIndex],
+        undo: 'disableOutputScrolling',
+        undoArguments: [notebook.activeCellIndex]
+      };
+      break;
+    case 'disableOutputScrolling':
+      action = {
+        do: 'disableOutputScrolling',
+        doArguments: [notebook.activeCellIndex],
+        undo: 'enableOutputScrolling',
+        undoArguments: [notebook.activeCellIndex]
+      };
+      break;
+    default:
+      throw new Error('Unknown action name, no compatible provenance action available.');
+  }
+  return action;
+}

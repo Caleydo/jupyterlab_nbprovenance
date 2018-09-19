@@ -6,7 +6,7 @@ import { NotebookActions, Notebook } from '@jupyterlab/notebook';
 export class ActionFunctions {
     public pauseTracking: boolean = false;
 
-    constructor(private notebook: Notebook) {}
+    constructor(private notebook: Notebook) { }
 
     public async addCell(index: number, cell: nbformat.ICell) {
         console.log('added cell at index', index, cell);
@@ -114,5 +114,21 @@ export class ActionFunctions {
                     break;
             }
         }
+    }
+
+    public async enableOutputScrolling(cellIndex: number) {
+        this.pauseTracking = true;
+        this.notebook.activeCellIndex = cellIndex;
+        NotebookActions.enableOutputScrolling(this.notebook);
+        this.pauseTracking = false;
+        return null;
+    }
+
+    public async disableOutputScrolling(cellIndex: number) {
+        this.pauseTracking = true;
+        this.notebook.activeCellIndex = cellIndex;
+        NotebookActions.disableOutputScrolling(this.notebook);
+        this.pauseTracking = false;
+        return null;
     }
 }
