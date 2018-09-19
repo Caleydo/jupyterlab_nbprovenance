@@ -12,6 +12,8 @@ import { Message } from '@phosphor/messaging';
 import './action-listener';
 import { ProvenanceGraphTraverser } from '@visualstorytelling/provenance-core';
 
+import '../style/side-bar.css';
+
 /**
  * The main view for the notebook provenance.
  */
