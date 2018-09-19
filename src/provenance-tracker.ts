@@ -1,8 +1,9 @@
-import { Notebook } from '@jupyterlab/notebook';
-import { Action } from '@visualstorytelling/provenance-core';
+import { Notebook, NotebookActions } from '@jupyterlab/notebook';
+import { Action, ReversibleAction } from '@visualstorytelling/provenance-core';
 import { IObservableList } from '@jupyterlab/observables';
-import { ICellModel } from '@jupyterlab/cells';
+import { ICellModel, Cell, CodeCell } from '@jupyterlab/cells';
 import { NotebookProvenance } from './notebook-provenance';
+import { toArray } from '@phosphor/algorithm';
 
 
 /**
@@ -25,15 +26,14 @@ export class NotebookProvenanceTracker {
     // });
     this.notebookProvenance.notebook.model.cells.changed.connect(this._onCellsChanged, this);
 
-    // TODO executed is a private signal (see @jupyterlab/notebook/src/actions.tsx) --> ask jupyterlab team to make it public
-    // NotebookActions.executed.connect((obj: { notebook: Notebook; cell: Cell }) => {
-    //   console.log('executed', obj);
-    // }, this);
+    this.trackCellOutput();
 
     // return new DisposableDelegate(() => {
     //   panel.content.model.cells.changed.disconnect(this._onCellsChanged);
     //   panel.content.activeCellChanged.disconnect(activeCellChangedListener);
     // });
+
+
   }
 
   trackActiveCell(): any {
@@ -79,6 +79,38 @@ export class NotebookProvenanceTracker {
     };
 
     this.notebookProvenance.notebook.activeCellChanged.connect(activeCellChangedListener);
+  }
+
+  trackCellOutput(): any {
+    NotebookActions.executed.connect((_dummy, obj: { notebook: Notebook; cell: Cell }) => {
+      console.log('Cell ran', obj.cell);
+      const index = toArray(obj.notebook.model.cells.iter()).indexOf(obj.cell.model);
+      let action: ReversibleAction;
+
+      switch (obj.cell.model.type) {
+        case 'markdown':
+          action = {
+            do: 'cellOutputs',
+            doArguments: [index, []],
+            undo: 'clearOutputs',
+            undoArguments: [index]
+          };
+          Promise.resolve(this.notebookProvenance.tracker.applyAction(action, true));
+          break;
+        case 'code':
+          const outputs = (obj.cell as CodeCell).model.outputs.toJSON();
+          action = {
+            do: 'cellOutputs',
+            doArguments: [index, outputs],
+            undo: 'clearOutputs',
+            undoArguments: [index]
+          };
+          Promise.resolve(this.notebookProvenance.tracker.applyAction(action, true));
+          break;
+        default:
+          break;
+      }
+    }, this);
   }
 
   /**

@@ -1,5 +1,5 @@
 import { nbformat } from '@jupyterlab/coreutils';
-import { ICellModel } from '@jupyterlab/cells';
+import { ICellModel, CodeCellModel, MarkdownCell } from '@jupyterlab/cells';
 import { NotebookActions, Notebook } from '@jupyterlab/notebook';
 
 
@@ -79,6 +79,40 @@ export class ActionFunctions {
         const cell = this.notebook.model.cells.get(index);
         if (cell) {
             cell.value.text = value;
+        }
+    }
+
+    public async cellOutputs(index: number, outputs: nbformat.IOutput[]) {
+        const cell = this.notebook.widgets[index];
+        const cellModel = this.notebook.model.cells.get(index);
+        if (cellModel) {
+            switch (cellModel.type) {
+                case 'markdown':
+                    (cell as MarkdownCell).rendered = true;
+                    break;
+                case 'code':
+                    (cellModel as CodeCellModel).outputs.fromJSON(outputs);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public async clearOutputs(index: number) {
+        const cell = this.notebook.widgets[index];
+        const cellModel = this.notebook.model.cells.get(index);
+        if (cellModel) {
+            switch (cellModel.type) {
+                case 'markdown':
+                    (cell as MarkdownCell).rendered = false;
+                    break;
+                case 'code':
+                    (cellModel as CodeCellModel).outputs.clear();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
