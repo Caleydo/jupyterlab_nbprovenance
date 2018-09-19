@@ -32,8 +32,6 @@ export class NotebookProvenanceTracker {
     //   panel.content.model.cells.changed.disconnect(this._onCellsChanged);
     //   panel.content.activeCellChanged.disconnect(activeCellChangedListener);
     // });
-
-
   }
 
   trackActiveCell(): any {

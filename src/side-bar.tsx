@@ -87,7 +87,12 @@ class ProvenanceGraphTreeComponent extends React.Component<IProps, IState> {
 
     render() {
         if (this.props.notebookProvenance) {
-            return <ProvenanceTreeVisualizationReact traverser={this.props.notebookProvenance.traverser as ProvenanceGraphTraverser} />;
+            return (
+                <div>
+                    <span>Provenance of `{(this.props.notebookProvenance.notebook.parent! as NotebookPanel).context.path}`</span>
+                    <ProvenanceTreeVisualizationReact traverser={this.props.notebookProvenance.traverser as ProvenanceGraphTraverser} />
+                </div>
+            );
         }
         return <div className='jp-nbprovenance-nograph'>No provenance available for the current tab.</div>;
     }
