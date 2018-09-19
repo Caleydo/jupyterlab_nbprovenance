@@ -1,6 +1,6 @@
-import { JupyterLab, JupyterLabPlugin, ILayoutRestorer, ApplicationShell } from '@jupyterlab/application';
+import { JupyterLab, JupyterLabPlugin, ILayoutRestorer } from '@jupyterlab/application';
 import '../style/index.css';
-import { NotebookPanel, Notebook } from '@jupyterlab/notebook';
+import { NotebookPanel, Notebook, INotebookTracker } from '@jupyterlab/notebook';
 import { SideBar } from './side-bar';
 import { NotebookProvenance } from './notebook-provenance';
 
@@ -10,36 +10,26 @@ import { NotebookProvenance } from './notebook-provenance';
 const plugin: JupyterLabPlugin<void> = {
   id: 'jupyterlab_nbprovenance',
   autoStart: true,
-  requires: [ILayoutRestorer],
+  requires: [ILayoutRestorer, INotebookTracker],
   activate,
 };
 
 export default plugin;
 
-
 export const notebookModelCache = new Map<Notebook, NotebookProvenance>();
 
-function activate(app: JupyterLab, restorer: ILayoutRestorer): void {
-  const updateModelCache = (shell: ApplicationShell) => {
-    const currentWidget = shell.currentWidget;
-    if (currentWidget === null || (currentWidget instanceof NotebookPanel) === false) {
-      return;
-    }
+function activate(app: JupyterLab, restorer: ILayoutRestorer, nbTracker: INotebookTracker): void {
+  nbTracker.widgetAdded.connect((_: INotebookTracker, nbPanel: NotebookPanel) => {
+    // wait until the session with the notebook model is ready
+    nbPanel.session.ready.then(() => {
+      const notebook: Notebook = nbPanel.content;
+      if (!notebookModelCache.has(notebook)) {
+        notebookModelCache.set(notebook, new NotebookProvenance(app, notebook));
+      }
+    });
+  });
 
-    const notebook: Notebook = (currentWidget as NotebookPanel).content;
-    let model;
-
-    if (notebookModelCache.has(notebook)) {
-      model = notebookModelCache.get(notebook);
-    } else {
-      model = new NotebookProvenance(app, notebook);
-      notebookModelCache.set(notebook, model);
-    }
-  };
-
-  app.shell.currentChanged.connect(updateModelCache);
-
-  const provenanceView = new SideBar(app.shell);
+  const provenanceView = new SideBar(app.shell, nbTracker);
   provenanceView.id = 'nbprovenance-view';
   provenanceView.title.caption = 'Notebook Provenance';
   provenanceView.title.iconClass = 'jp-nbprovenanceIcon';

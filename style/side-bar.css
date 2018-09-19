@@ -1,3 +1,21 @@
+.jp-nbprovenance-view {
+    display: flex;
+}
+
+.jp-nbprovenance-view .jp-nbprovenance-graph {
+    background: var(--jp-toolbar-background);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex: 1 1 auto;
+}
+
+.jp-nbprovenance-view .jp-nbprovenance-nograph {
+    margin: 10px;
+    color: var(--jp-ui-font-color1);
+    font-size: var(--jp-ui-font-size1);
+}
+
 .node {
     fill: lightsteelblue;
     stroke: steelblue;
