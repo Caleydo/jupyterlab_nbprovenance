@@ -206,6 +206,22 @@ export function findAction(actionName: string, args: any) {
         undoArguments: []
       };
       break;
+    case 'selectAbove':
+      action = {
+        do: 'selectAbove',
+        doArguments: [notebook.activeCellIndex],
+        undo: 'deselectAll', // TODO instead of deselectAll the old selection should be stored and restored
+        undoArguments: []
+      };
+      break;
+    case 'selectBelow':
+      action = {
+        do: 'selectBelow',
+        doArguments: [notebook.activeCellIndex],
+        undo: 'deselectAll', // TODO instead of deselectAll the old selection should be stored and restored
+        undoArguments: []
+      };
+      break;
     default:
       throw new Error('Unknown action name, no compatible provenance action available.');
   }

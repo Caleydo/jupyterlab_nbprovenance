@@ -145,4 +145,20 @@ export class ActionFunctions {
         this.pauseTracking = false;
         return null;
     }
+
+    public async selectAbove(cellIndex: number) {
+        this.pauseTracking = true;
+        this.notebook.activeCellIndex = cellIndex;
+        NotebookActions.selectAbove(this.notebook);
+        this.pauseTracking = false;
+        return null;
+    }
+
+    public async selectBelow(cellIndex: number) {
+        this.pauseTracking = true;
+        this.notebook.activeCellIndex = cellIndex;
+        NotebookActions.selectBelow(this.notebook);
+        this.pauseTracking = false;
+        return null;
+    }
 }

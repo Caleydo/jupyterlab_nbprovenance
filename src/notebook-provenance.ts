@@ -47,6 +47,8 @@ export class NotebookProvenance {
         this._registry.register('disableOutputScrolling', this._actionFunctions.disableOutputScrolling, this._actionFunctions);
         this._registry.register('selectAll', this._actionFunctions.selectAll, this._actionFunctions);
         this._registry.register('deselectAll', this._actionFunctions.deselectAll, this._actionFunctions);
+        this._registry.register('selectAbove', this._actionFunctions.selectAbove, this._actionFunctions);
+        this._registry.register('selectBelow', this._actionFunctions.selectBelow, this._actionFunctions);
 
         this._traverser = new ProvenanceGraphTraverser(this._registry, this._graph);
         this._tracker = new ProvenanceTracker(this._registry, this._graph);
