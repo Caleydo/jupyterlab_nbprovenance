@@ -2,7 +2,14 @@ import { nbformat } from '@jupyterlab/coreutils';
 import { ICellModel, CodeCellModel, MarkdownCell } from '@jupyterlab/cells';
 import { NotebookActions, Notebook } from '@jupyterlab/notebook';
 
-
+/**
+ * Define available action functions that are calling the NotebookActions
+ *
+ * All functions of these class are automatically registered in the
+ * `ActionFunctionRegistry` object in `NotebookProvenance`.
+ *
+ * Be aware that renaming function names will break existing provenance graphs!
+ */
 export class ActionFunctions {
     public pauseTracking: boolean = false;
 

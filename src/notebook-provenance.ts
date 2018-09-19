@@ -33,22 +33,16 @@ export class NotebookProvenance {
         }
         this._graph.on('nodeAdded', (node: ProvenanceNode) => this.onNodeAdded(node));
 
-        this._actionFunctions = new ActionFunctions(this.notebook);
         this._registry = new ActionFunctionRegistry();
-        this._registry.register('addCell', this._actionFunctions.addCell, this._actionFunctions);
-        this._registry.register('removeCell', this._actionFunctions.removeCell, this._actionFunctions);
-        this._registry.register('moveCell', this._actionFunctions.moveCell, this._actionFunctions);
-        this._registry.register('setCell', this._actionFunctions.setCell, this._actionFunctions);
-        this._registry.register('changeActiveCell', this._actionFunctions.changeActiveCell, this._actionFunctions);
-        this._registry.register('cellValue', this._actionFunctions.cellValue, this._actionFunctions);
-        this._registry.register('cellOutputs', this._actionFunctions.cellOutputs, this._actionFunctions);
-        this._registry.register('clearOutputs', this._actionFunctions.clearOutputs, this._actionFunctions);
-        this._registry.register('enableOutputScrolling', this._actionFunctions.enableOutputScrolling, this._actionFunctions);
-        this._registry.register('disableOutputScrolling', this._actionFunctions.disableOutputScrolling, this._actionFunctions);
-        this._registry.register('selectAll', this._actionFunctions.selectAll, this._actionFunctions);
-        this._registry.register('deselectAll', this._actionFunctions.deselectAll, this._actionFunctions);
-        this._registry.register('selectAbove', this._actionFunctions.selectAbove, this._actionFunctions);
-        this._registry.register('selectBelow', this._actionFunctions.selectBelow, this._actionFunctions);
+        this._actionFunctions = new ActionFunctions(this.notebook);
+        // get method names from the object (see https://stackoverflow.com/a/48051971)
+        let actionFunctionNames = Object.getPrototypeOf(this._actionFunctions);
+        Object.getOwnPropertyNames(actionFunctionNames)
+            .filter((d) => d !== 'constructor')
+            .map((name: string) => {
+                // dynamically register all functions from the ActionFunctions class/object
+                this._registry.register(name, (this._actionFunctions as any)[name], this._actionFunctions);
+            });
 
         this._traverser = new ProvenanceGraphTraverser(this._registry, this._graph);
         this._tracker = new ProvenanceTracker(this._registry, this._graph);
