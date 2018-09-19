@@ -131,4 +131,18 @@ export class ActionFunctions {
         this.pauseTracking = false;
         return null;
     }
+
+    public async selectAll() {
+        this.pauseTracking = true;
+        NotebookActions.selectAll(this.notebook);
+        this.pauseTracking = false;
+        return null;
+    }
+
+    public async deselectAll() {
+        this.pauseTracking = true;
+        NotebookActions.deselectAll(this.notebook);
+        this.pauseTracking = false;
+        return null;
+    }
 }
