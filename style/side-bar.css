@@ -1,0 +1,40 @@
+.node {
+    fill: lightsteelblue;
+    stroke: steelblue;
+    cursor: pointer;
+}
+
+.node circle {
+    stroke-width: .3px;
+}
+
+.node.branch-active {
+    fill: yellow;
+    background-color: #333;
+}
+
+.node.branch-active text {
+    display: block;
+}
+
+.node.node-active {
+    fill: blue;
+    stroke: darkblue;
+}
+
+.node text {
+    display: none;
+    fill: black;
+    stroke-width: 0;
+    font-family: sans-serif;
+}
+
+.link {
+    fill: none;
+    stroke: black;
+    stroke-width: .5px;
+}
+
+.link.active {
+    stroke: black;
+}
