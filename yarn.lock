@@ -389,9 +389,9 @@
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@visualstorytelling/provenance-core/-/provenance-core-1.1.5.tgz#70a7da4dc9e46650e6082fef71edcb12eea6d641"
 
-"@visualstorytelling/provenance-tree-visualization-react@~1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@visualstorytelling/provenance-tree-visualization-react/-/provenance-tree-visualization-react-1.0.1.tgz#83b463332a7487dabeb0d98622f252afd1d8f588"
+"@visualstorytelling/provenance-tree-visualization-react@~1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@visualstorytelling/provenance-tree-visualization-react/-/provenance-tree-visualization-react-1.0.2.tgz#bf8c0e2f0a707cddb8db25694e07b6db19fc5793"
   dependencies:
     "@visualstorytelling/provenance-tree-visualization" "^1.0.0"
 
@@ -1632,13 +1632,6 @@ prop-types@^15.6.0:
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
-prop-types@^15.6.2:
-  version "15.6.2"
-  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
-  dependencies:
-    loose-envify "^1.3.1"
-    object-assign "^4.1.1"
-
 pseudomap@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/pseudomap/-/pseudomap-1.0.2.tgz#f052a28da70e618917ef0a8ac34c1ae5a68286b3"
@@ -1659,7 +1652,7 @@ querystringify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.0.0.tgz#fa3ed6e68eb15159457c89b37bc6472833195755"
 
-react-dom@~16.4.0:
+react-dom@~16.4.0, react-dom@~16.4.2:
   version "16.4.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.4.2.tgz#4afed569689f2c561d2b8da0b819669c38a0bda4"
   dependencies:
@@ -1668,16 +1661,7 @@ react-dom@~16.4.0:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
 
-react-dom@~16.5.1:
-  version "16.5.1"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.5.1.tgz#29d0c5a01ed3b6b4c14309aa91af6ec4eb4f292c"
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.2"
-    schedule "^0.4.0"
-
-react@~16.4.0:
+react@~16.4.0, react@~16.4.2:
   version "16.4.2"
   resolved "https://registry.yarnpkg.com/react/-/react-16.4.2.tgz#2cd90154e3a9d9dd8da2991149fdca3c260e129f"
   dependencies:
@@ -1685,15 +1669,6 @@ react@~16.4.0:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.0"
-
-react@~16.5.1:
-  version "16.5.1"
-  resolved "https://registry.yarnpkg.com/react/-/react-16.5.1.tgz#8cb8e9f8cdcb4bde41c9a138bfbf907e66132372"
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.2"
-    schedule "^0.4.0"
 
 read-pkg-up@^1.0.1:
   version "1.0.1"
@@ -1837,12 +1812,6 @@ sass-graph@^2.2.4:
     lodash "^4.0.0"
     scss-tokenizer "^0.2.3"
     yargs "^7.0.0"
-
-schedule@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/schedule/-/schedule-0.4.0.tgz#fa20cfd0bfbf91c47d02272fd7096780d3170bbb"
-  dependencies:
-    object-assign "^4.1.1"
 
 scss-tokenizer@^0.2.3:
   version "0.2.3"
