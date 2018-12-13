@@ -1,5 +1,5 @@
 {
-  "name": "jupyterlab_nbprovenance",
+  "name": "@visualstorytelling/jupyterlab_nbprovenance",
   "version": "0.1.0",
   "description": "JupyterLab Notebook Provenance",
   "keywords": [
@@ -33,16 +33,17 @@
     "extension:disable": "jupyter labextension disable jupyterlab_nbprovenance"
   },
   "dependencies": {
-    "@jupyterlab/application": "~0.18.5",
-    "@jupyterlab/apputils": "~0.18.4",
-    "@jupyterlab/console": "~0.18.4",
-    "@jupyterlab/filebrowser": "~0.18.6",
-    "@jupyterlab/mainmenu": "~0.7.4",
-    "@jupyterlab/notebook": "~0.18.4",
-    "@jupyterlab/rendermime-interfaces": "~1.1.7",
+    "@jupyterlab/application": "*",
+    "@jupyterlab/apputils": "*",
+    "@jupyterlab/console": "*",
+    "@jupyterlab/filebrowser": "*",
+    "@jupyterlab/mainmenu": "*",
+    "@jupyterlab/notebook": "*",
+    "@jupyterlab/rendermime-interfaces": "*",
     "@phosphor/widgets": "~1.6.0",
-    "@visualstorytelling/provenance-core": "~1.1.5",
+    "@visualstorytelling/provenance-core": "~1.1.6",
     "@visualstorytelling/provenance-tree-visualization-react": "~1.0.2",
+    "@visualstorytelling/slide-deck-visualization": "~1.0.1",
     "node-sass": "~4.9.3",
     "react": "~16.4.2",
     "react-dom": "~16.4.2"
