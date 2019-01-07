@@ -44,11 +44,13 @@
     "@visualstorytelling/provenance-core": "~1.1.6",
     "@visualstorytelling/provenance-tree-visualization-react": "~1.0.2",
     "@visualstorytelling/slide-deck-visualization": "~1.0.1",
+    "lodash": "4.17.10",
     "node-sass": "~4.9.3",
     "react": "~16.4.2",
     "react-dom": "~16.4.2"
   },
   "devDependencies": {
+    "@types/lodash": "4.14.119",
     "tslint": "~5.11.0",
     "typescript": "~3.0.3",
     "watch": "~1.0.2"

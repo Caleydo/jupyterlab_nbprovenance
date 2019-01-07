@@ -4,7 +4,12 @@ import { IObservableList } from '@jupyterlab/observables';
 import { ICellModel, Cell, CodeCell } from '@jupyterlab/cells';
 import { NotebookProvenance } from './notebook-provenance';
 import { toArray } from '@phosphor/algorithm';
+import debounce from 'lodash/debounce';
 
+// We need to store the old value of each cell to be able to create the undo action
+interface ICellWithOldValue extends ICellModel {
+  oldTextValue: string;
+}
 
 /**
  * A notebook widget extension that adds a button to the toolbar.
@@ -15,7 +20,7 @@ export class NotebookProvenanceTracker {
    */
   constructor(private notebookProvenance: NotebookProvenance) {
 
-    this.trackActiveCell();
+    // this.trackActiveCell();
 
     // this.notebookProvenance.notebook.model.contentChanged.connect(() => {
     //   console.log(['contentChanged', arguments]);
@@ -28,10 +33,59 @@ export class NotebookProvenanceTracker {
 
     this.trackCellOutput();
 
+
+    // listen to content changes of current cells
+    let cell;
+    let cellIterator = this.notebookProvenance.notebook.model.cells.iter();
+    // tslint:disable-next-line
+    while (cell = cellIterator.next()) {
+      this.trackCellContents(cell);
+    }
+
+    // listen to content changes of new cells
+    this.notebookProvenance.notebook.model.cells.changed.connect((list, mutation) => {
+      if (mutation.type === 'add') {
+        this.trackCellContents(mutation.newValues[0]);
+      }
+    }, this);
+
     // return new DisposableDelegate(() => {
     //   panel.content.model.cells.changed.disconnect(this._onCellsChanged);
     //   panel.content.activeCellChanged.disconnect(activeCellChangedListener);
     // });
+  }
+
+  trackCellContents(cell: ICellModel) {
+    // Since we deal with an array abstraction (IObservableList), we need some function to get
+    // the index of a cell given the cell and the containing list.
+    const getCellIndex = (list: IObservableList<ICellModel>, cell: ICellModel) => {
+      for (let i = 0; i < list.length; i++) {
+        if (list.get(i) === cell) {
+          return i;
+        }
+      }
+      throw new Error('cell not part of list');
+    };
+
+    // store the current value
+    (cell as ICellWithOldValue).oldTextValue = cell.value.text;
+
+    const cellUpdated = (cell: ICellModel) => {
+      const cellIndex = getCellIndex(this.notebookProvenance.notebook.model.cells, cell);
+      const cellChangedAction = {
+        do: 'cellValue',
+        doArguments: [cellIndex, cell.value.text],
+        undo: 'cellValue',
+        undoArguments: [cellIndex, (cell as ICellWithOldValue).oldTextValue]
+      };
+      // update value for next change.
+      (cell as any).oldTextValue = cell.value.text;
+      Promise.resolve(this.notebookProvenance.tracker.applyAction(cellChangedAction, true));
+    };
+
+    // add listener
+    console.log(debounce);
+    cell.contentChanged.connect(debounce(cellUpdated, 1000));
   }
 
   trackActiveCell(): any {
