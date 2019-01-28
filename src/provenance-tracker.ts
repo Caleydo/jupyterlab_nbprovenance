@@ -1,7 +1,7 @@
 import { Notebook, NotebookActions } from '@jupyterlab/notebook';
-import { Action, ReversibleAction } from '@visualstorytelling/provenance-core';
+import { Action, ReversibleAction, IrreversibleAction } from '@visualstorytelling/provenance-core';
 import { IObservableList } from '@jupyterlab/observables';
-import { ICellModel, Cell, CodeCell } from '@jupyterlab/cells';
+import { ICellModel, Cell } from '@jupyterlab/cells';
 import { NotebookProvenance } from './notebook-provenance';
 import { toArray } from '@phosphor/algorithm';
 
@@ -26,7 +26,7 @@ export class NotebookProvenanceTracker {
     // });
     this.notebookProvenance.notebook.model.cells.changed.connect(this._onCellsChanged, this);
 
-    this.trackCellOutput();
+    this.trackCellExecuted();
 
     // return new DisposableDelegate(() => {
     //   panel.content.model.cells.changed.disconnect(this._onCellsChanged);
@@ -79,14 +79,16 @@ export class NotebookProvenanceTracker {
     this.notebookProvenance.notebook.activeCellChanged.connect(activeCellChangedListener);
   }
 
-  trackCellOutput(): any {
+  trackCellExecuted(): any {
     NotebookActions.executed.connect((_dummy, obj: { notebook: Notebook; cell: Cell }) => {
       console.log('Cell ran', obj.cell);
       const index = toArray(obj.notebook.model.cells.iter()).indexOf(obj.cell.model);
       let action: ReversibleAction;
+      let iaction: IrreversibleAction;
 
       switch (obj.cell.model.type) {
         case 'markdown':
+        case 'raw':
           action = {
             do: 'cellOutputs',
             doArguments: [index, []],
@@ -96,14 +98,11 @@ export class NotebookProvenanceTracker {
           Promise.resolve(this.notebookProvenance.tracker.applyAction(action, true));
           break;
         case 'code':
-          const outputs = (obj.cell as CodeCell).model.outputs.toJSON();
-          action = {
-            do: 'cellOutputs',
-            doArguments: [index, outputs],
-            undo: 'clearOutputs',
-            undoArguments: [index]
+          iaction = {
+            do: 'executedCell',
+            doArguments: [index],
           };
-          Promise.resolve(this.notebookProvenance.tracker.applyAction(action, true));
+          Promise.resolve(this.notebookProvenance.tracker.applyAction(iaction, true));
           break;
         default:
           break;
