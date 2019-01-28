@@ -44,8 +44,9 @@ export class NotebookProvenance {
                 this._registry.register(name, (this._actionFunctions as any)[name], this._actionFunctions);
             });
 
-        this._traverser = new ProvenanceGraphTraverser(this._registry, this._graph);
         this._tracker = new ProvenanceTracker(this._registry, this._graph);
+        this._traverser = new ProvenanceGraphTraverser(this._registry, this._graph, this._tracker);
+        this._traverser.trackingWhenTraversing = false;
         this._nbtracker = new NotebookProvenanceTracker(this);
     }
 
