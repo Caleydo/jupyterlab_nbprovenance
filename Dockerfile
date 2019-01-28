@@ -4,7 +4,7 @@ RUN conda install -y -c conda-forge yarn
 RUN apk add --no-cache bash
 RUN conda install -y jupyter
 RUN conda install -y -c conda-forge pandas
-RUN conda install -y -c conda-forge jupyterlab=0.34.10
+RUN conda install -y -c conda-forge jupyterlab=0.35.4
 
 WORKDIR /jupyterlab_nbprovenance
 COPY yarn.lock package.json ./

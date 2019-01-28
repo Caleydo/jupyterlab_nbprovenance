@@ -18,14 +18,14 @@ After jumping back to an earlier state the user can continue with a different pa
 ## Installation
 
 ```bash
-jupyter labextension install jupyterlab_nbprovenance
+jupyter labextension install @visualstorytelling/jupyterlab_nbprovenance
 ```
 
 You can also use this with the Docker base images:
 
 ```Dockerfile
 FROM jupyter/minimal-notebook
-RUN jupyter labextension install jupyterlab_nbprovenance
+RUN jupyter labextension install @visualstorytelling/jupyterlab_nbprovenance
 CMD start.sh jupyter lab
 ```
 
