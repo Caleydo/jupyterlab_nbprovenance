@@ -32,7 +32,9 @@ export class NotebookProvenance {
         } else {
             this._graph = new ProvenanceGraph({ name: 'nbprovenance.default.graph', version: this.app.info.version });
         }
-        this._graph.on('nodeAdded', (node: ProvenanceNode) => this.onNodeAdded(node));
+        this.session.ready.then(() => {
+            this._graph.on('nodeAdded', (node: ProvenanceNode) => this.onNodeAdded(node));
+        });
 
         this._registry = new ActionFunctionRegistry();
         this._actionFunctions = new ActionFunctions(this.notebook, this.session);
@@ -52,9 +54,14 @@ export class NotebookProvenance {
             const restart = window.confirm('Can only traverse to node by restarting kernel, clearing notebook and re-executing provenance graph');
             if (restart) {
                 await this.session.restart();
+                // pause tracker, as clearing notebook adds node to graph
+                this._tracker.acceptActions = false;
                 this.notebook.model.cells.clear();
+                this.notebook.model.cells.insert(0, this.notebook.model.contentFactory.createCodeCell({}));
+                this._tracker.acceptActions = true;
+                // unpause tracker b
                 this._graph.current = this._graph.root;
-                this._traverser.toStateNode(node);
+                this._traverser.toStateNode(node.id);
             }
         });
         this._nbtracker = new NotebookProvenanceTracker(this);

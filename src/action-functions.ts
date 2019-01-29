@@ -90,8 +90,8 @@ export class ActionFunctions {
         }
     }
 
-    public async executedCell(index: number) {
-        const cell: CodeCell | undefined = (this.notebook as any).get_cell(index);
+    public async executeCell(index: number) {
+        const cell: CodeCell | null = (this.notebook as any).layout.widgets[index];
         if (cell) {
             CodeCell.execute(cell, this.session);
         }
