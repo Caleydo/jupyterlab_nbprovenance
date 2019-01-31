@@ -424,10 +424,10 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@visualstorytelling/provenance-core@~1.1.6":
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/@visualstorytelling/provenance-core/-/provenance-core-1.1.6.tgz#29d2c0a88ad99eb0cacb4114f5e5d04304e5b759"
-  integrity sha512-USeLBIMQIZaIgoS96nPindimlqFxkFB8RzjzCRDs9rHdrGFVCQa/AW4qh8S8C0tQlNwioGQZ1i5r5mub5i9Eag==
+"@visualstorytelling/provenance-core@1.1.7":
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@visualstorytelling/provenance-core/-/provenance-core-1.1.7.tgz#9e5494ddae4d61bf601063d0d9cc0ff9cc2cddd2"
+  integrity sha512-wckkgiBhowWM5B6cx2DHhk0J60F6Wf8RBTnP0s2u64IHV3EsxPGbt2iC8IWfYaYBPiuSrZR2JXhhG3o6PLB1+g==
 
 "@visualstorytelling/provenance-tree-visualization-react@~1.0.2":
   version "1.0.2"

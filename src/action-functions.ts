@@ -1,6 +1,7 @@
 import { nbformat } from '@jupyterlab/coreutils';
-import { ICellModel, CodeCellModel, MarkdownCell } from '@jupyterlab/cells';
+import { ICellModel, CodeCellModel, MarkdownCell, CodeCell } from '@jupyterlab/cells';
 import { NotebookActions, Notebook } from '@jupyterlab/notebook';
+import { IClientSession } from '@jupyterlab/apputils';
 
 /**
  * Define available action functions that are calling the NotebookActions
@@ -13,7 +14,7 @@ import { NotebookActions, Notebook } from '@jupyterlab/notebook';
 export class ActionFunctions {
     public pauseTracking: boolean = false;
 
-    constructor(private notebook: Notebook) { }
+    constructor(private notebook: Notebook, private session: IClientSession) { }
 
     public async addCell(index: number, cell: nbformat.ICell) {
         console.log('added cell at index', index, cell);
@@ -86,6 +87,13 @@ export class ActionFunctions {
         const cell = this.notebook.model.cells.get(index);
         if (cell) {
             cell.value.text = value;
+        }
+    }
+
+    public async executeCell(index: number) {
+        const cell: CodeCell | null = (this.notebook as any).layout.widgets[index];
+        if (cell) {
+            CodeCell.execute(cell, this.session);
         }
     }
 

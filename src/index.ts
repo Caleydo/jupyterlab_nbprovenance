@@ -24,7 +24,7 @@ function activate(app: JupyterLab, restorer: ILayoutRestorer, nbTracker: INotebo
     nbPanel.session.ready.then(() => {
       const notebook: Notebook = nbPanel.content;
       if (!notebookModelCache.has(notebook)) {
-        notebookModelCache.set(notebook, new NotebookProvenance(app, notebook));
+        notebookModelCache.set(notebook, new NotebookProvenance(app, notebook, nbPanel.session));
       }
     });
   });
