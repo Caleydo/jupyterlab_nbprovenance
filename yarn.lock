@@ -429,10 +429,10 @@
   resolved "https://registry.yarnpkg.com/@visualstorytelling/provenance-core/-/provenance-core-1.1.7.tgz#9e5494ddae4d61bf601063d0d9cc0ff9cc2cddd2"
   integrity sha512-wckkgiBhowWM5B6cx2DHhk0J60F6Wf8RBTnP0s2u64IHV3EsxPGbt2iC8IWfYaYBPiuSrZR2JXhhG3o6PLB1+g==
 
-"@visualstorytelling/provenance-tree-visualization-react@~1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@visualstorytelling/provenance-tree-visualization-react/-/provenance-tree-visualization-react-1.0.2.tgz#bf8c0e2f0a707cddb8db25694e07b6db19fc5793"
-  integrity sha512-5ZSoip2kEje5/x8SHjXMVrr3QMC4LBMR3LGO60a+a6UNaxIfeIUFVzed2BJSVDJ0TEVvPg0O2fkKRKTKjT/3iQ==
+"@visualstorytelling/provenance-tree-visualization-react@~1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@visualstorytelling/provenance-tree-visualization-react/-/provenance-tree-visualization-react-1.0.3.tgz#3bd178a7b37f081ac52bfd4a20664335f5171cc6"
+  integrity sha512-c0u88xjCWP25s9z2jGwzNHO+BznywKn81VI+ea/K+EnrPN1MrAF0SiLWvT5voJ17Dvjsl4JpZpeCtpEVRtb/6g==
   dependencies:
     "@visualstorytelling/provenance-tree-visualization" "^1.0.0"
 
