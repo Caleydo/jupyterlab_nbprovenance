@@ -44,7 +44,7 @@
     "@visualstorytelling/provenance-core": "1.1.7",
     "@visualstorytelling/provenance-tree-visualization-react": "~1.0.3",
     "@visualstorytelling/slide-deck-visualization": "~1.0.1",
-    "node-sass": "~4.9.3",
+    "node-sass": "~4.13.1",
     "react": "~16.4.2",
     "react-dom": "~16.4.2"
   },
